@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  BANK_OPS
+  APPRAISER
+  ADMIN
+}
+
+enum CaseStatus {
+  DRAFT
+  SUBMITTED
+  BANK_REVIEW
+  BANK_APPROVED
+  BANK_REJECTED
+  APPRAISAL_REQUESTED
+  APPRAISAL_IN_PROGRESS
+  APPRAISAL_COMPLETED
+  READY_FOR_DEAL
+  DEAL_IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PropertySource {
+  PLATFORM
+  EXTERNAL
+}
+
+enum BankCheckResult {
+  PENDING
+  APPROVED
+  REJECTED
+  CONDITIONAL
+}
+
+enum AppraisalStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+}
+
+enum NotificationChannel {
+  IN_APP
+  SMS
+  EMAIL
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  nationalId   String?
+  role         UserRole
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  buyerCases      Case[]             @relation("BuyerCases")
+  sellerCases     Case[]             @relation("SellerCases")
+  appraisals      AppraisalRequest[] @relation("AppraiserRequests")
+  caseEvents      CaseEvent[]
+  notifications   Notification[]
+
+  @@map("users")
+}
+
+model Case {
+  id              String         @id @default(cuid())
+  caseNumber      String         @unique
+  status          CaseStatus     @default(DRAFT)
+  buyerId         String
+  sellerId        String?
+  propertyAddress String
+  propertyType    String
+  propertyArea    Float?
+  propertySource  PropertySource @default(EXTERNAL)
+  askingPrice     Float?
+  buyerIncome     Float?
+  buyerNotes      String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  buyer            User              @relation("BuyerCases", fields: [buyerId], references: [id])
+  seller           User?             @relation("SellerCases", fields: [sellerId], references: [id])
+  bankCreditCheck  BankCreditCheck?
+  appraisalRequest AppraisalRequest?
+  events           CaseEvent[]
+  documents        Document[]
+
+  @@map("cases")
+}
+
+model CaseEvent {
+  id        String   @id @default(cuid())
+  caseId    String
+  userId    String?
+  eventType String
+  fromStatus CaseStatus?
+  toStatus   CaseStatus?
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  case Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("case_events")
+}
+
+model BankCreditCheck {
+  id              String          @id @default(cuid())
+  caseId          String          @unique
+  result          BankCheckResult @default(PENDING)
+  maxLoanAmount   Float?
+  interestRate    Float?
+  rejectionReason String?
+  reviewedAt      DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@map("bank_credit_checks")
+}
+
+model AppraisalRequest {
+  id              String          @id @default(cuid())
+  caseId          String          @unique
+  appraiserId     String?
+  status          AppraisalStatus @default(PENDING)
+  appraisedValue  Float?
+  reportNotes     String?
+  reportFileName  String?
+  completedAt     DateTime?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  case      Case  @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  appraiser User? @relation("AppraiserRequests", fields: [appraiserId], references: [id])
+
+  @@map("appraisal_requests")
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  caseId    String
+  type      String
+  fileName  String
+  filePath  String
+  createdAt DateTime @default(now())
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+model Notification {
+  id        String              @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  channel   NotificationChannel @default(IN_APP)
+  isRead    Boolean             @default(false)
+  caseId    String?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
