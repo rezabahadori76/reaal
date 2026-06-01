@@ -11,7 +11,7 @@ import { DashboardStats, Case } from '@/lib/types';
 import { useLocale } from '@/lib/i18n';
 
 export default function AdminDashboard() {
-  const { t, isRtl } = useLocale();
+  const { t } = useLocale();
   const { token } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [cases, setCases] = useState<Case[]>([]);
@@ -62,7 +62,7 @@ export default function AdminDashboard() {
           <h3 className="font-semibold text-white">{t('latestCases')}</h3>
           <Link href="/admin/cases" className="text-sm text-accent-light hover:underline flex items-center gap-1">
             {t('viewAll')}
-            <svg className={`w-4 h-4 ${isRtl ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
           </Link>
         </div>
         <div className="space-y-4">

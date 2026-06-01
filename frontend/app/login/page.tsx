@@ -6,18 +6,18 @@ import { useRouter } from 'next/navigation';
 import { useAuth, getDashboardRoute } from '@/lib/auth-context';
 import { AuthBackground, MeshBackground } from '@/components/background';
 import { Logo } from '@/components/ui';
-import { LanguageSwitcher, useLocale } from '@/lib/i18n';
+import { useLocale } from '@/lib/i18n';
 
 const DEMO_ACCOUNTS = [
-  { email: 'admin@platform.ir', roleKey: 'adminBadge', color: 'from-purple-500/20 to-pink-500/10 border-purple-500/20 hover:border-purple-500/40' },
-  { email: 'buyer@demo.ir', roleKey: 'actorBuyer', color: 'from-blue-500/20 to-cyan-500/10 border-blue-500/20 hover:border-blue-500/40' },
-  { email: 'seller@demo.ir', roleKey: 'actorSeller', color: 'from-emerald-500/20 to-teal-500/10 border-emerald-500/20 hover:border-emerald-500/40' },
-  { email: 'bank@demo.ir', roleKey: 'actorBank', color: 'from-gold/20 to-orange-500/10 border-gold/20 hover:border-gold/40' },
-  { email: 'appraiser@demo.ir', roleKey: 'actorAppraiser', color: 'from-violet-500/20 to-purple-500/10 border-violet-500/20 hover:border-violet-500/40' },
+  { email: 'admin@platform.com', roleKey: 'adminBadge' },
+  { email: 'buyer@demo.com', roleKey: 'actorBuyer' },
+  { email: 'seller@demo.com', roleKey: 'actorSeller' },
+  { email: 'bank@demo.com', roleKey: 'actorBank' },
+  { email: 'appraiser@demo.com', roleKey: 'actorAppraiser' },
 ];
 
 export default function LoginPage() {
-  const { t, isRtl } = useLocale();
+  const { t } = useLocale();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -54,21 +54,15 @@ export default function LoginPage() {
 
       <div className="flex-1 flex items-center justify-center p-6 relative">
         <MeshBackground className="lg:hidden" />
-        <div className="w-full max-w-md relative z-10 animate-slide-up">
+        <div className="w-full max-w-md relative z-10">
           <div className="mb-8 lg:hidden">
-            <div className="flex items-center justify-between">
-              <Logo size="lg" />
-              <LanguageSwitcher />
-            </div>
+            <Logo size="lg" />
           </div>
 
           <div className="glass-strong p-8">
-            <div className="mb-8 hidden lg:flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-white">{t('welcome')}</h1>
-                <p className="text-slate-400 text-sm mt-2">{t('welcomeSubtitle')}</p>
-              </div>
-              <LanguageSwitcher />
+            <div className="mb-8 hidden lg:block">
+              <h1 className="text-2xl font-bold text-white">{t('welcome')}</h1>
+              <p className="text-slate-400 text-sm mt-2">{t('welcomeSubtitle')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -111,7 +105,7 @@ export default function LoginPage() {
                   key={acc.email}
                   onClick={() => doLogin(acc.email, '123456')}
                   disabled={loading}
-                  className={`${isRtl ? 'text-right' : 'text-left'} p-3 rounded-xl border bg-gradient-to-br transition-all duration-200 hover:-translate-y-0.5 disabled:opacity-50 ${acc.color}`}
+                  className="text-left p-3 rounded-xl border border-white/10 bg-white/[0.035] transition-all duration-200 hover:bg-white/[0.06] hover:border-white/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:translate-y-0"
                 >
                   <span className="font-semibold text-sm text-white">{t(acc.roleKey)}</span>
                   <span className="block text-slate-500 font-mono text-[10px] mt-1 truncate" dir="ltr">{acc.email}</span>

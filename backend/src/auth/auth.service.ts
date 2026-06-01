@@ -13,7 +13,7 @@ export class AuthService {
 
   async register(dto: RegisterDto) {
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
-    if (existing) throw new ConflictException('این ایمیل قبلاً ثبت شده است');
+    if (existing) throw new ConflictException('This email is already registered');
 
     const passwordHash = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
@@ -41,11 +41,11 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (!user || !user.isActive) {
-      throw new UnauthorizedException('ایمیل یا رمز عبور اشتباه است');
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
-    if (!valid) throw new UnauthorizedException('ایمیل یا رمز عبور اشتباه است');
+    if (!valid) throw new UnauthorizedException('Invalid email or password');
 
     const safeUser = {
       id: user.id,

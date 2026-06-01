@@ -5,9 +5,9 @@ export const ROLES_KEY = 'roles';
 export const Roles = (...roles: UserRole[]) => SetMetadata(ROLES_KEY, roles);
 
 export const ROLE_LABELS: Record<UserRole, string> = {
-  BUYER: 'خریدار',
-  SELLER: 'فروشنده',
-  BANK_OPS: 'کارشناس بانک',
-  APPRAISER: 'ارزیاب',
-  ADMIN: 'مدیر',
+  BUYER: 'Buyer',
+  SELLER: 'Seller',
+  BANK_OPS: 'Bank',
+  APPRAISER: 'Valuation',
+  ADMIN: 'Admin',
 };

@@ -54,7 +54,7 @@ export default function NewCasePage() {
         <form onSubmit={handleSubmit} className="card p-6 max-w-2xl space-y-4">
           <div>
             <label className="label">{t('propertyAddress')}</label>
-            <input className="input" value={form.propertyAddress} onChange={(e) => setForm({ ...form, propertyAddress: e.target.value })} required placeholder="Muscat, Al Mouj, Building 12" />
+            <input className="input" value={form.propertyAddress} onChange={(e) => setForm({ ...form, propertyAddress: e.target.value })} required placeholder="742 Oak Street, Austin, TX 78701" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

@@ -18,7 +18,7 @@ export class JwtAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
     if (!authHeader?.startsWith('Bearer ')) {
-      throw new UnauthorizedException('توکن احراز هویت یافت نشد');
+      throw new UnauthorizedException('Authentication token not found');
     }
 
     const token = authHeader.slice(7);
@@ -27,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
       request.user = payload;
       return true;
     } catch {
-      throw new UnauthorizedException('توکن نامعتبر است');
+      throw new UnauthorizedException('Invalid token');
     }
   }
 }
@@ -46,7 +46,7 @@ export class RolesGuard implements CanActivate {
 
     const { user } = context.switchToHttp().getRequest();
     if (!user || !requiredRoles.includes(user.role)) {
-      throw new ForbiddenException('دسترسی غیرمجاز');
+      throw new ForbiddenException('Access denied');
     }
     return true;
   }

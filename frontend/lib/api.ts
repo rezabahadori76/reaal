@@ -22,7 +22,7 @@ async function request<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, body.message || 'خطایی رخ داد');
+    throw new ApiError(res.status, body.message || 'An error occurred');
   }
 
   return res.json();

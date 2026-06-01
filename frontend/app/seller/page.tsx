@@ -11,7 +11,7 @@ import { Case } from '@/lib/types';
 import { formatMoney, useLocale } from '@/lib/i18n';
 
 export default function SellerDashboard() {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const { token } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ export default function SellerDashboard() {
                 <CaseCard caseItem={c} href={`/seller/cases/${c.id}`} />
                 {c.status === 'COMPLETED' && c.askingPrice && (
                   <p className="text-sm text-emerald-600 mr-4 mt-1">
-                    {t('receivedAmount')}: {formatMoney(c.askingPrice, locale)}
+                    {t('receivedAmount')}: {formatMoney(c.askingPrice)}
                   </p>
                 )}
               </div>

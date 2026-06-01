@@ -6,17 +6,17 @@ const config: Config = {
     extend: {
       colors: {
         surface: {
-          DEFAULT: '#0c1222',
-          50: '#131b2e',
-          100: '#1a2438',
-          200: '#243044',
-          300: '#2e3d56',
+          DEFAULT: '#09111f',
+          50: '#0f1a2d',
+          100: '#142037',
+          200: '#1c2a43',
+          300: '#283752',
         },
         accent: {
-          DEFAULT: '#10b981',
-          light: '#34d399',
-          dark: '#059669',
-          glow: 'rgba(16, 185, 129, 0.4)',
+          DEFAULT: '#14b8a6',
+          light: '#5eead4',
+          dark: '#0f766e',
+          glow: 'rgba(20, 184, 166, 0.22)',
         },
         gold: {
           DEFAULT: '#f59e0b',
@@ -25,22 +25,22 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Vazirmatn', 'Tahoma', 'sans-serif'],
-        display: ['Vazirmatn', 'Tahoma', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Inter', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'mesh': 'radial-gradient(at 40% 20%, rgba(16,185,129,0.15) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(245,158,11,0.1) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(59,130,246,0.08) 0px, transparent 50%)',
-        'grid-pattern': 'linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)',
+        'mesh': 'radial-gradient(circle at 20% 0%, rgba(20,184,166,0.12), transparent 28%), radial-gradient(circle at 82% 10%, rgba(59,130,246,0.10), transparent 25%), linear-gradient(180deg, rgba(9,17,31,1) 0%, rgba(15,26,45,1) 100%)',
+        'grid-pattern': 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
       },
       backgroundSize: {
         grid: '64px 64px',
       },
       boxShadow: {
-        glow: '0 0 40px rgba(16, 185, 129, 0.15)',
-        'glow-gold': '0 0 40px rgba(245, 158, 11, 0.15)',
-        card: '0 4px 24px rgba(0, 0, 0, 0.4)',
-        'card-hover': '0 8px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(16, 185, 129, 0.1)',
+        glow: '0 10px 24px rgba(20, 184, 166, 0.14)',
+        'glow-gold': '0 10px 24px rgba(245, 158, 11, 0.12)',
+        card: '0 1px 2px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255,255,255,0.03)',
+        'card-hover': '0 12px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255,255,255,0.04)',
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

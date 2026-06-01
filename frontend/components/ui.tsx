@@ -1,12 +1,11 @@
 import clsx from 'clsx';
-import { CaseStatus, STATUS_COLORS, STATUS_LABELS, STATUS_LABELS_AR } from '@/lib/types';
+import { CaseStatus, STATUS_COLORS, STATUS_LABELS } from '@/lib/types';
 import { useLocale } from '@/lib/i18n';
 
 export function StatusBadge({ status }: { status: CaseStatus }) {
-  const { locale } = useLocale();
   return (
     <span className={clsx('badge', STATUS_COLORS[status])}>
-      {locale === 'ar' ? STATUS_LABELS_AR[status] : STATUS_LABELS[status]}
+      {STATUS_LABELS[status]}
     </span>
   );
 }
@@ -25,15 +24,14 @@ export function StatCard({
   accent?: 'emerald' | 'gold' | 'blue' | 'purple';
 }) {
   const accents = {
-    emerald: 'from-accent/20 to-transparent border-accent/10 group-hover:border-accent/30',
-    gold: 'from-gold/20 to-transparent border-gold/10 group-hover:border-gold/30',
-    blue: 'from-blue-500/20 to-transparent border-blue-500/10 group-hover:border-blue-500/30',
-    purple: 'from-purple-500/20 to-transparent border-purple-500/10 group-hover:border-purple-500/30',
+    emerald: 'border-accent/15 before:bg-accent',
+    gold: 'border-gold/15 before:bg-gold',
+    blue: 'border-blue-500/15 before:bg-blue-400',
+    purple: 'border-purple-500/15 before:bg-purple-400',
   };
 
   return (
-    <div className={clsx('stat-card group', accents[accent])}>
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-l from-accent/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <div className={clsx('stat-card group before:absolute before:inset-x-6 before:top-0 before:h-px before:opacity-60', accents[accent])}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm text-slate-400 font-medium">{label}</p>
@@ -41,7 +39,7 @@ export function StatCard({
           {trend && <p className="text-xs text-accent-light mt-2">{trend}</p>}
         </div>
         {icon && (
-          <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-2xl border border-white/10">
+          <div className="w-12 h-12 rounded-xl bg-white/[0.04] flex items-center justify-center text-2xl border border-white/10">
             {icon}
           </div>
         )}
@@ -96,7 +94,7 @@ export function PageHeader({
     <div className="flex items-start justify-between mb-8">
       <div>
         {badge && (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent-light text-xs font-medium mb-3">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent-light text-xs font-semibold mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             {badge}
           </span>
@@ -114,7 +112,7 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
   const sizes = { sm: 'text-lg', md: 'text-xl', lg: 'text-2xl' };
   return (
     <div className="flex items-center gap-3">
-      <div className={clsx('rounded-xl bg-gradient-to-br from-accent to-accent-dark flex items-center justify-center shadow-glow', size === 'sm' ? 'w-8 h-8' : size === 'md' ? 'w-10 h-10' : 'w-12 h-12')}>
+      <div className={clsx('rounded-xl bg-accent flex items-center justify-center shadow-glow', size === 'sm' ? 'w-8 h-8' : size === 'md' ? 'w-10 h-10' : 'w-12 h-12')}>
         <svg viewBox="0 0 24 24" fill="none" className={size === 'sm' ? 'w-4 h-4' : 'w-6 h-6'} stroke="white" strokeWidth="2">
           <path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>

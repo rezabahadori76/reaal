@@ -1,4 +1,4 @@
-import { PrismaClient, UserRole, CaseStatus, BankCheckResult, AppraisalStatus } from '@prisma/client';
+import { PrismaClient, UserRole, CaseStatus, BankCheckResult } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -6,91 +6,86 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
+  // Reset demo data for a clean English-only dataset
+  await prisma.notification.deleteMany();
+  await prisma.caseEvent.deleteMany();
+  await prisma.document.deleteMany();
+  await prisma.appraisalRequest.deleteMany();
+  await prisma.bankCreditCheck.deleteMany();
+  await prisma.case.deleteMany();
+  await prisma.user.deleteMany();
+
   const passwordHash = await bcrypt.hash('123456', 10);
 
   const users = await Promise.all([
-    prisma.user.upsert({
-      where: { email: 'admin@platform.ir' },
-      update: {},
-      create: {
-        email: 'admin@platform.ir',
+    prisma.user.create({
+      data: {
+        email: 'admin@platform.com',
         passwordHash,
-        fullName: 'مدیر سیستم',
-        phone: '09120000001',
+        fullName: 'System Admin',
+        phone: '+1 512 555 0001',
         role: UserRole.ADMIN,
       },
     }),
-    prisma.user.upsert({
-      where: { email: 'buyer@demo.ir' },
-      update: {},
-      create: {
-        email: 'buyer@demo.ir',
+    prisma.user.create({
+      data: {
+        email: 'buyer@demo.com',
         passwordHash,
-        fullName: 'علی رضایی',
-        phone: '09121234567',
+        fullName: 'James Mitchell',
+        phone: '+1 512 555 1234',
         nationalId: '0012345678',
         role: UserRole.BUYER,
       },
     }),
-    prisma.user.upsert({
-      where: { email: 'seller@demo.ir' },
-      update: {},
-      create: {
-        email: 'seller@demo.ir',
+    prisma.user.create({
+      data: {
+        email: 'seller@demo.com',
         passwordHash,
-        fullName: 'محمد کریمی',
-        phone: '09129876543',
+        fullName: 'Sarah Thompson',
+        phone: '+1 512 555 5678',
         role: UserRole.SELLER,
       },
     }),
-    prisma.user.upsert({
-      where: { email: 'bank@demo.ir' },
-      update: {},
-      create: {
-        email: 'bank@demo.ir',
+    prisma.user.create({
+      data: {
+        email: 'bank@demo.com',
         passwordHash,
-        fullName: 'کارشناس بانک ملت',
-        phone: '02188776655',
+        fullName: 'David Reynolds',
+        phone: '+1 512 555 9012',
         role: UserRole.BANK_OPS,
       },
     }),
-    prisma.user.upsert({
-      where: { email: 'appraiser@demo.ir' },
-      update: {},
-      create: {
-        email: 'appraiser@demo.ir',
+    prisma.user.create({
+      data: {
+        email: 'appraiser@demo.com',
         passwordHash,
-        fullName: 'شرکت تثمین — ارزیاب',
-        phone: '02144556677',
+        fullName: 'Premier Valuation LLC',
+        phone: '+1 512 555 3456',
         role: UserRole.APPRAISER,
       },
     }),
   ]);
 
-  const [admin, buyer, seller, bankOps, appraiser] = users;
+  const [admin, buyer, seller, bankOps] = users;
 
-  const demoCase = await prisma.case.upsert({
-    where: { caseNumber: 'RE-2026-DEMO01' },
-    update: {},
-    create: {
+  const demoCase = await prisma.case.create({
+    data: {
       caseNumber: 'RE-2026-DEMO01',
       status: CaseStatus.BANK_REVIEW,
       buyerId: buyer.id,
       sellerId: seller.id,
-      propertyAddress: 'تهران، سعادت‌آباد، میدان کاج، پلاک ۱۲',
-      propertyType: 'آپارتمان',
+      propertyAddress: '742 Oak Street, Austin, TX 78701',
+      propertyType: 'Apartment',
       propertyArea: 120,
       propertySource: 'PLATFORM',
       askingPrice: 8_000_000_000,
       buyerIncome: 80_000_000,
-      buyerNotes: 'خرید اول — نیاز به وام ۷۰٪',
+      buyerNotes: 'First-time buyer — requesting 70% mortgage financing',
     },
   });
 
-  await prisma.bankCreditCheck.upsert({
-    where: { caseId: demoCase.id },
-    update: {},
-    create: { caseId: demoCase.id, result: BankCheckResult.PENDING },
+  await prisma.bankCreditCheck.create({
+    data: { caseId: demoCase.id, result: BankCheckResult.PENDING },
   });
 
   const events = [
@@ -99,7 +94,7 @@ async function main() {
       userId: buyer.id,
       eventType: 'CASE_CREATED',
       toStatus: CaseStatus.DRAFT,
-      message: 'پرونده ایجاد شد',
+      message: 'Case created',
     },
     {
       caseId: demoCase.id,
@@ -107,7 +102,7 @@ async function main() {
       eventType: 'STATUS_CHANGE',
       fromStatus: CaseStatus.DRAFT,
       toStatus: CaseStatus.SUBMITTED,
-      message: 'درخواست ارسال شد',
+      message: 'Request submitted by buyer',
     },
     {
       caseId: demoCase.id,
@@ -115,40 +110,36 @@ async function main() {
       eventType: 'STATUS_CHANGE',
       fromStatus: CaseStatus.SUBMITTED,
       toStatus: CaseStatus.BANK_REVIEW,
-      message: 'ارجاع به بانک',
+      message: 'Case sent to bank for credit review',
     },
   ];
 
-  for (const event of events) {
-    await prisma.caseEvent.create({ data: event });
-  }
+  await prisma.caseEvent.createMany({ data: events });
 
-  const notifications = [
-    {
-      userId: bankOps.id,
-      title: 'پرونده جدید',
-      message: `پرونده ${demoCase.caseNumber} برای بررسی آماده است`,
-      caseId: demoCase.id,
-    },
-    {
-      userId: buyer.id,
-      title: 'ارجاع به بانک',
-      message: 'پرونده شما برای اعتبارسنجی به بانک ارسال شد',
-      caseId: demoCase.id,
-    },
-  ];
-
-  for (const notification of notifications) {
-    await prisma.notification.create({ data: notification });
-  }
+  await prisma.notification.createMany({
+    data: [
+      {
+        userId: bankOps.id,
+        title: 'New case',
+        message: `Case ${demoCase.caseNumber} is ready for credit review`,
+        caseId: demoCase.id,
+      },
+      {
+        userId: buyer.id,
+        title: 'Sent to bank',
+        message: 'Your case has been sent to the bank for credit review',
+        caseId: demoCase.id,
+      },
+    ],
+  });
 
   console.log('\n✅ Seed completed!\n');
   console.log('Demo accounts (password: 123456):');
-  console.log('  Admin:     admin@platform.ir');
-  console.log('  Buyer:     buyer@demo.ir');
-  console.log('  Seller:    seller@demo.ir');
-  console.log('  Bank:      bank@demo.ir');
-  console.log('  Appraiser: appraiser@demo.ir');
+  console.log('  Admin:     admin@platform.com');
+  console.log('  Buyer:     buyer@demo.com');
+  console.log('  Seller:    seller@demo.com');
+  console.log('  Bank:      bank@demo.com');
+  console.log('  Appraiser: appraiser@demo.com');
   console.log(`\nDemo case: ${demoCase.caseNumber} (status: BANK_REVIEW)\n`);
 }
 

@@ -2,11 +2,11 @@ import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validato
 import { UserRole } from '@prisma/client';
 
 export class RegisterDto {
-  @IsEmail({}, { message: 'ایمیل معتبر نیست' })
+  @IsEmail({}, { message: 'Invalid email address' })
   email: string;
 
   @IsString()
-  @MinLength(6, { message: 'رمز عبور حداقل ۶ کاراکتر باشد' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
   password: string;
 
   @IsString()

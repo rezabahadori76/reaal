@@ -5,11 +5,11 @@ import { DashboardLayout, RequireAuth } from '@/components/layout';
 import { PageHeader, LoadingSpinner } from '@/components/ui';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
-import { User, ROLE_LABELS, ROLE_LABELS_AR } from '@/lib/types';
+import { User, ROLE_LABELS } from '@/lib/types';
 import { useLocale } from '@/lib/i18n';
 
 export default function AdminUsersPage() {
-  const { t, locale, isRtl } = useLocale();
+  const { t } = useLocale();
   const { token } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,10 +36,10 @@ export default function AdminUsersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-white/5">
-                  <th className={`${isRtl ? 'text-right' : 'text-left'} p-4 font-medium text-slate-400`}>{t('name')}</th>
-                  <th className={`${isRtl ? 'text-right' : 'text-left'} p-4 font-medium text-slate-400`}>{t('email')}</th>
-                  <th className={`${isRtl ? 'text-right' : 'text-left'} p-4 font-medium text-slate-400`}>{t('role')}</th>
-                  <th className={`${isRtl ? 'text-right' : 'text-left'} p-4 font-medium text-slate-400`}>{t('contact')}</th>
+                  <th className="text-left p-4 font-medium text-slate-400">{t('name')}</th>
+                  <th className="text-left p-4 font-medium text-slate-400">{t('email')}</th>
+                  <th className="text-left p-4 font-medium text-slate-400">{t('role')}</th>
+                  <th className="text-left p-4 font-medium text-slate-400">{t('contact')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -49,7 +49,7 @@ export default function AdminUsersPage() {
                     <td className="p-4 font-mono text-xs text-slate-400" dir="ltr">{u.email}</td>
                     <td className="p-4">
                       <span className={`badge ${roleColors[u.role]}`}>
-                        {locale === 'ar' ? ROLE_LABELS_AR[u.role] : ROLE_LABELS[u.role]}
+                        {ROLE_LABELS[u.role]}
                       </span>
                     </td>
                     <td className="p-4 text-slate-500">{u.phone || '—'}</td>

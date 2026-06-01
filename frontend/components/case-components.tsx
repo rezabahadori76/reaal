@@ -2,19 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Case, STATUS_LABELS, STATUS_LABELS_AR } from '@/lib/types';
+import { Case, STATUS_LABELS } from '@/lib/types';
 import { formatLocalizedDate, formatMoney, useLocale } from '@/lib/i18n';
 import { StatusBadge } from './ui';
 
 export function CaseCard({ caseItem, href }: { caseItem: Case; href: string }) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
 
   return (
     <Link href={href} className="card-hover p-6 block group">
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
-            <span className="font-mono text-xs text-accent-light bg-accent/10 px-2 py-0.5 rounded-md border border-accent/20">
+            <span className="font-mono text-xs text-accent-light bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">
               {caseItem.caseNumber}
             </span>
           </div>
@@ -32,21 +32,21 @@ export function CaseCard({ caseItem, href }: { caseItem: Case; href: string }) {
           {caseItem.buyer.fullName}
         </span>
         {caseItem.askingPrice && (
-          <span className="text-gold-light font-medium">{formatMoney(caseItem.askingPrice, locale)}</span>
+          <span className="text-gold-light font-medium">{formatMoney(caseItem.askingPrice)}</span>
         )}
-        <span>{formatLocalizedDate(caseItem.updatedAt, locale)}</span>
+        <span>{formatLocalizedDate(caseItem.updatedAt)}</span>
       </div>
     </Link>
   );
 }
 
 export function CaseTimeline({ events }: { events: Case['events'] }) {
-  const { t, locale, isRtl } = useLocale();
+  const { t } = useLocale();
   if (!events?.length) return <p className="text-sm text-slate-500">{t('noEvents')}</p>;
 
   return (
     <div className="relative">
-      <div className={`absolute top-2 bottom-2 ${isRtl ? 'right-[5px]' : 'left-[5px]'} w-px bg-gradient-to-b from-accent/50 via-accent/20 to-transparent`} />
+      <div className="absolute top-2 bottom-2 left-[5px] w-px bg-gradient-to-b from-accent/50 via-accent/20 to-transparent" />
       <div className="space-y-6">
         {events.map((event, i) => (
           <div key={event.id} className="flex gap-4 relative">
@@ -55,7 +55,7 @@ export function CaseTimeline({ events }: { events: Case['events'] }) {
               <p className="text-sm font-medium text-slate-200">{event.message}</p>
               <p className="text-xs text-slate-500 mt-1">
                 {event.user?.fullName && <span className="text-slate-400">{event.user.fullName} · </span>}
-                {formatLocalizedDate(event.createdAt, locale)}
+                {formatLocalizedDate(event.createdAt)}
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@ export function CaseDetailView({
   onRefresh: () => void;
   role?: string;
 }) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const [loading, setLoading] = useState('');
   const [sellers, setSellers] = useState<{ id: string; fullName: string }[]>([]);
   const [selectedSeller, setSelectedSeller] = useState('');
@@ -110,7 +110,7 @@ export function CaseDetailView({
       <div className="glass-strong p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <span className="font-mono text-xs text-accent-light bg-accent/10 px-2 py-0.5 rounded-md border border-accent/20">{caseItem.caseNumber}</span>
+            <span className="font-mono text-xs text-accent-light bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">{caseItem.caseNumber}</span>
             <h2 className="text-xl font-bold text-white mt-3">{caseItem.propertyAddress}</h2>
             <p className="text-slate-400 mt-1">
               {caseItem.propertyType}
@@ -121,14 +121,14 @@ export function CaseDetailView({
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-          <InfoItem label={t('price')} value={formatMoney(caseItem.askingPrice, locale)} />
-          <InfoItem label={t('income')} value={formatMoney(caseItem.buyerIncome, locale)} />
+          <InfoItem label={t('price')} value={formatMoney(caseItem.askingPrice)} />
+          <InfoItem label={t('income')} value={formatMoney(caseItem.buyerIncome)} />
           <InfoItem label={t('buyer')} value={caseItem.buyer.fullName} />
           <InfoItem label={t('seller')} value={caseItem.seller?.fullName || '—'} />
         </div>
 
         {caseItem.buyerNotes && (
-          <p className="text-sm text-slate-400 mt-4 bg-white/[0.03] border border-white/5 p-4 rounded-xl leading-relaxed">
+          <p className="text-sm text-slate-400 mt-4 bg-white/[0.035] border border-white/10 p-4 rounded-xl leading-relaxed">
             {caseItem.buyerNotes}
           </p>
         )}
@@ -137,11 +137,11 @@ export function CaseDetailView({
       {caseItem.bankCreditCheck && caseItem.bankCreditCheck.result !== 'PENDING' && (
         <div className="glass p-6">
           <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="text-gold">🏦</span> {t('bankResult')}
+            <span className="w-2 h-2 rounded-full bg-gold" /> {t('bankResult')}
           </h3>
           <div className="grid grid-cols-3 gap-4">
             <InfoItem label={t('result')} value={caseItem.bankCreditCheck.result === 'APPROVED' ? t('approved') : caseItem.bankCreditCheck.result === 'REJECTED' ? t('rejected') : t('conditional')} />
-            <InfoItem label={t('maxLoan')} value={formatMoney(caseItem.bankCreditCheck.maxLoanAmount, locale)} />
+            <InfoItem label={t('maxLoan')} value={formatMoney(caseItem.bankCreditCheck.maxLoanAmount)} />
             <InfoItem label={t('interestRate')} value={caseItem.bankCreditCheck.interestRate ? `${caseItem.bankCreditCheck.interestRate}%` : '—'} />
           </div>
         </div>
@@ -150,10 +150,10 @@ export function CaseDetailView({
       {caseItem.appraisalRequest?.appraisedValue && (
         <div className="glass p-6">
           <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="text-purple-400">📋</span> {t('valuationReport')}
+            <span className="w-2 h-2 rounded-full bg-purple-400" /> {t('valuationReport')}
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <InfoItem label={t('appraisedValue')} value={formatMoney(caseItem.appraisalRequest.appraisedValue, locale)} />
+            <InfoItem label={t('appraisedValue')} value={formatMoney(caseItem.appraisalRequest.appraisedValue)} />
             <InfoItem label={t('appraiser')} value={caseItem.appraisalRequest.appraiser?.fullName || '—'} />
           </div>
           {caseItem.appraisalRequest.reportNotes && (
@@ -256,7 +256,7 @@ export function CaseDetailView({
         {caseItem.status === 'APPRAISAL_IN_PROGRESS' && (role === 'APPRAISER' || role === 'ADMIN') && (
           <div className="space-y-3 max-w-md">
             <div>
-              <label className="label">{t('valueOman')}</label>
+              <label className="label">{t('propertyValue')}</label>
               <input className="input" type="number" value={appraisalValue} onChange={(e) => setAppraisalValue(e.target.value)} placeholder="8000000000" />
             </div>
             <div>
@@ -315,7 +315,7 @@ export function CaseDetailView({
 
 function InfoItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="p-4 rounded-xl bg-white/[0.03] border border-white/5">
+    <div className="p-4 rounded-xl bg-white/[0.035] border border-white/10">
       <p className="text-xs text-slate-500 font-medium">{label}</p>
       <p className="text-sm font-semibold text-white mt-1">{value}</p>
     </div>
@@ -325,9 +325,9 @@ function InfoItem({ label, value }: { label: string; value: string }) {
 function ActionPanel({ title, children }: { title: string; children: React.ReactNode }) {
   if (!children) return null;
   return (
-    <div className="glass p-6 border-accent/10 bg-accent/[0.03]">
+    <div className="glass p-6 border-accent/15 bg-accent/[0.035]">
       <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-        <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
         {title}
       </h3>
       <div className="space-y-3">{children}</div>
@@ -336,7 +336,7 @@ function ActionPanel({ title, children }: { title: string; children: React.React
 }
 
 export function WorkflowSteps({ currentStatus }: { currentStatus: string }) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const steps = [
     'SUBMITTED',
     'BANK_REVIEW',
@@ -363,8 +363,8 @@ export function WorkflowSteps({ currentStatus }: { currentStatus: string }) {
               <div key={step} className="flex flex-col items-center text-center relative">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold z-10 transition-all duration-300 ${
                   isRejected ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                  done ? 'bg-accent/20 text-accent-light border border-accent/30 shadow-glow' :
-                  active ? 'bg-gold/20 text-gold-light border-2 border-gold/50 shadow-glow-gold scale-110' :
+                  done ? 'bg-accent/15 text-accent-light border border-accent/25' :
+                  active ? 'bg-gold/15 text-gold-light border border-gold/30' :
                   'bg-white/5 text-slate-600 border border-white/10'
                 }`}>
                   {done ? '✓' : i + 1}
@@ -372,7 +372,7 @@ export function WorkflowSteps({ currentStatus }: { currentStatus: string }) {
                 <p className={`text-[10px] md:text-xs mt-2 leading-tight font-medium ${
                   active ? 'text-gold-light' : done ? 'text-accent-light' : 'text-slate-500'
                 }`}>
-                  {locale === 'ar' ? STATUS_LABELS_AR[step as keyof typeof STATUS_LABELS_AR] : STATUS_LABELS[step as keyof typeof STATUS_LABELS]}
+                  {STATUS_LABELS[step as keyof typeof STATUS_LABELS]}
                 </p>
               </div>
             );

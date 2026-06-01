@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { useAuth, getDashboardRoute } from '@/lib/auth-context';
-import { ROLE_LABELS, ROLE_LABELS_AR, UserRole } from '@/lib/types';
-import { LanguageSwitcher, useLocale } from '@/lib/i18n';
+import { ROLE_LABELS, UserRole } from '@/lib/types';
+import { useLocale } from '@/lib/i18n';
 import { Logo, LoadingSpinner } from './ui';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
@@ -67,16 +67,16 @@ const navItems = (t: (key: string) => string): Record<UserRole, { href: string; 
 });
 
 const ROLE_COLORS: Record<UserRole, string> = {
-  ADMIN: 'from-purple-500 to-pink-500',
-  BUYER: 'from-blue-500 to-cyan-500',
-  SELLER: 'from-emerald-500 to-teal-500',
-  BANK_OPS: 'from-amber-500 to-orange-500',
-  APPRAISER: 'from-violet-500 to-purple-500',
+  ADMIN: 'bg-purple-500/15 text-purple-200 border-purple-500/20',
+  BUYER: 'bg-blue-500/15 text-blue-200 border-blue-500/20',
+  SELLER: 'bg-emerald-500/15 text-emerald-200 border-emerald-500/20',
+  BANK_OPS: 'bg-amber-500/15 text-amber-200 border-amber-500/20',
+  APPRAISER: 'bg-violet-500/15 text-violet-200 border-violet-500/20',
 };
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, loading } = useAuth();
-  const { t, locale, isRtl } = useLocale();
+  const { t } = useLocale();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -94,16 +94,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   }
 
   const items = navItems(t)[user.role] || [];
-  const roleLabel = locale === 'ar' ? ROLE_LABELS_AR[user.role] : ROLE_LABELS[user.role];
+  const roleLabel = ROLE_LABELS[user.role];
 
   return (
     <div className="min-h-screen flex bg-surface">
-      <aside className={`w-72 glass-strong m-4 flex flex-col shrink-0 ${isRtl ? 'ml-0 rounded-l-none' : 'mr-0 rounded-r-none'}`}>
-        <div className="p-6 border-b border-white/5">
-          <div className="flex items-center justify-between gap-3">
-            <Link href="/"><Logo size="md" /></Link>
-            <LanguageSwitcher />
-          </div>
+      <aside className="w-72 glass-strong m-4 flex flex-col shrink-0 mr-0 rounded-r-none">
+        <div className="p-6 border-b border-white/10">
+          <Link href="/"><Logo size="md" /></Link>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
@@ -121,9 +118,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           ))}
         </nav>
 
-        <div className="p-4 m-4 mt-0 glass rounded-xl">
+        <div className="p-4 m-4 mt-0 glass rounded-2xl">
           <div className="flex items-center gap-3">
-            <div className={clsx('w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center text-white font-bold text-sm shadow-lg', ROLE_COLORS[user.role])}>
+            <div className={clsx('w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm', ROLE_COLORS[user.role])}>
               {user.fullName.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">
@@ -133,7 +130,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={() => { logout(); router.push('/login'); }}
-            className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all"
+            className="mt-4 w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
@@ -144,7 +141,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="flex-1 p-6 md:p-8 overflow-auto relative">
-        <div className="absolute inset-0 bg-mesh pointer-events-none opacity-50" />
+        <div className="absolute inset-0 bg-mesh pointer-events-none opacity-30" />
         <div className="relative z-10 max-w-6xl">{children}</div>
       </main>
     </div>

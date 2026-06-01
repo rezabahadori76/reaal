@@ -16,18 +16,18 @@ export const CASE_TRANSITIONS: Record<CaseStatus, CaseStatus[]> = {
 };
 
 export const CASE_STATUS_LABELS: Record<CaseStatus, string> = {
-  DRAFT: 'پیش‌نویس',
-  SUBMITTED: 'ثبت شده',
-  BANK_REVIEW: 'بررسی بانک',
-  BANK_APPROVED: 'تأیید بانک',
-  BANK_REJECTED: 'رد بانک',
-  APPRAISAL_REQUESTED: 'درخواست ارزیابی',
-  APPRAISAL_IN_PROGRESS: 'در حال ارزیابی',
-  APPRAISAL_COMPLETED: 'ارزیابی تکمیل',
-  READY_FOR_DEAL: 'آماده معامله',
-  DEAL_IN_PROGRESS: 'در حال معامله',
-  COMPLETED: 'تکمیل شده',
-  CANCELLED: 'لغو شده',
+  DRAFT: 'Draft',
+  SUBMITTED: 'Submitted',
+  BANK_REVIEW: 'Bank review',
+  BANK_APPROVED: 'Bank approved',
+  BANK_REJECTED: 'Bank rejected',
+  APPRAISAL_REQUESTED: 'Valuation requested',
+  APPRAISAL_IN_PROGRESS: 'Valuation in progress',
+  APPRAISAL_COMPLETED: 'Valuation completed',
+  READY_FOR_DEAL: 'Ready for deal',
+  DEAL_IN_PROGRESS: 'Deal in progress',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
 };
 
 export function canTransition(from: CaseStatus, to: CaseStatus): boolean {

@@ -34,9 +34,9 @@ export class AppraisalService {
       include: { appraisalRequest: true },
     });
 
-    if (!caseRecord?.appraisalRequest) throw new NotFoundException('درخواست ارزیابی یافت نشد');
+    if (!caseRecord?.appraisalRequest) throw new NotFoundException('Valuation request not found');
     if (caseRecord.status !== CaseStatus.APPRAISAL_REQUESTED) {
-      throw new BadRequestException('پرونده در وضعیت درخواست ارزیابی نیست');
+      throw new BadRequestException('Case is not in valuation requested status');
     }
 
     await this.prisma.appraisalRequest.update({
@@ -63,7 +63,7 @@ export class AppraisalService {
         eventType: 'APPRAISAL_ACCEPTED',
         fromStatus: CaseStatus.APPRAISAL_REQUESTED,
         toStatus: CaseStatus.APPRAISAL_IN_PROGRESS,
-        message: 'ارزیاب پرونده را پذیرفت',
+        message: 'Appraiser accepted the case',
       },
     });
 
@@ -78,7 +78,7 @@ export class AppraisalService {
 
     if (!caseRecord?.appraisalRequest) throw new NotFoundException();
     if (caseRecord.status !== CaseStatus.APPRAISAL_IN_PROGRESS) {
-      throw new BadRequestException('پرونده در حال ارزیابی نیست');
+      throw new BadRequestException('Case is not in valuation in progress status');
     }
 
     await this.prisma.appraisalRequest.update({
@@ -105,7 +105,7 @@ export class AppraisalService {
         eventType: 'APPRAISAL_COMPLETED',
         fromStatus: CaseStatus.APPRAISAL_IN_PROGRESS,
         toStatus: CaseStatus.APPRAISAL_COMPLETED,
-        message: `گزارش ارزیابی: ${dto.appraisedValue.toLocaleString('fa-IR')} ریال`,
+        message: `Valuation report: $${(dto.appraisedValue / 1000).toLocaleString('en-US')}`,
       },
     });
 
@@ -126,14 +126,14 @@ export class AppraisalService {
         eventType: 'STATUS_CHANGE',
         fromStatus: CaseStatus.APPRAISAL_COMPLETED,
         toStatus: CaseStatus.READY_FOR_DEAL,
-        message: 'پرونده آماده نهایی‌سازی معامله است',
+        message: 'Case is ready for deal finalization',
       },
     });
 
     await this.notifications.notifyUser(
       caseRecord.buyerId,
-      'ارزیابی تکمیل شد',
-      `ارزش ملک: ${dto.appraisedValue.toLocaleString('fa-IR')} ریال — پرونده آماده معامله است.`,
+      'Valuation completed',
+      `Property value: $${(dto.appraisedValue / 1000).toLocaleString('en-US')} — case is ready for deal.`,
       caseId,
     );
 
@@ -141,8 +141,8 @@ export class AppraisalService {
     for (const admin of admins) {
       await this.notifications.notifyUser(
         admin.id,
-        'ارزیابی تکمیل',
-        `پرونده ${caseRecord.caseNumber} آماده معامله است.`,
+        'Valuation completed',
+        `Case ${caseRecord.caseNumber} is ready for deal.`,
         caseId,
       );
     }

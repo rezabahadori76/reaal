@@ -51,7 +51,7 @@ export class CasesService {
       include: caseInclude,
     });
 
-    await this.addEvent(newCase.id, buyerId, 'CASE_CREATED', null, CaseStatus.DRAFT, 'پرونده ایجاد شد');
+    await this.addEvent(newCase.id, buyerId, 'CASE_CREATED', null, CaseStatus.DRAFT, 'Case created');
     return newCase;
   }
 
@@ -69,7 +69,7 @@ export class CasesService {
       where: { id },
       include: caseInclude,
     });
-    if (!caseRecord) throw new NotFoundException('پرونده یافت نشد');
+    if (!caseRecord) throw new NotFoundException('Case not found');
     this.assertAccess(caseRecord, userId, role);
     return caseRecord;
   }
@@ -77,19 +77,19 @@ export class CasesService {
   async submit(id: string, userId: string, role: UserRole) {
     const caseRecord = await this.findOne(id, userId, role);
     if (caseRecord.status !== CaseStatus.DRAFT) {
-      throw new BadRequestException('فقط پرونده پیش‌نویس قابل ارسال است');
+      throw new BadRequestException('Only draft cases can be submitted');
     }
     if (role === UserRole.BUYER && caseRecord.buyerId !== userId) {
       throw new ForbiddenException();
     }
 
-    return this.transition(id, userId, CaseStatus.SUBMITTED, 'درخواست توسط خریدار ارسال شد');
+    return this.transition(id, userId, CaseStatus.SUBMITTED, 'Request submitted by buyer');
   }
 
   async sendToBank(id: string, userId: string) {
     const caseRecord = await this.findOne(id, userId, UserRole.ADMIN);
     if (caseRecord.status !== CaseStatus.SUBMITTED) {
-      throw new BadRequestException('پرونده باید در وضعیت ثبت شده باشد');
+      throw new BadRequestException('Case must be in submitted status');
     }
 
     await this.prisma.bankCreditCheck.upsert({
@@ -98,12 +98,12 @@ export class CasesService {
       update: {},
     });
 
-    const updated = await this.transition(id, userId, CaseStatus.BANK_REVIEW, 'پرونده به بانک ارجاع شد');
+    const updated = await this.transition(id, userId, CaseStatus.BANK_REVIEW, 'Case sent to bank');
 
     await this.notifications.notifyUser(
       caseRecord.buyerId,
-      'ارجاع به بانک',
-      `پرونده ${caseRecord.caseNumber} برای بررسی اعتباری به بانک ارسال شد.`,
+      'Sent to bank',
+      `Case ${caseRecord.caseNumber} has been sent to the bank for credit review.`,
       id,
     );
 
@@ -111,8 +111,8 @@ export class CasesService {
     for (const bankUser of bankUsers) {
       await this.notifications.notifyUser(
         bankUser.id,
-        'پرونده جدید بانک',
-        `پرونده ${caseRecord.caseNumber} برای بررسی اعتباری آماده است.`,
+        'New bank case',
+        `Case ${caseRecord.caseNumber} is ready for credit review.`,
         id,
       );
     }
@@ -125,7 +125,7 @@ export class CasesService {
     const seller = await this.prisma.user.findFirst({
       where: { id: dto.sellerId, role: UserRole.SELLER },
     });
-    if (!seller) throw new NotFoundException('فروشنده یافت نشد');
+    if (!seller) throw new NotFoundException('Seller not found');
 
     const updated = await this.prisma.case.update({
       where: { id },
@@ -133,12 +133,12 @@ export class CasesService {
       include: caseInclude,
     });
 
-    await this.addEvent(id, userId, 'SELLER_ASSIGNED', caseRecord.status, caseRecord.status, `فروشنده ${seller.fullName} به پرونده متصل شد`);
+    await this.addEvent(id, userId, 'SELLER_ASSIGNED', caseRecord.status, caseRecord.status, `Seller ${seller.fullName} assigned to case`);
 
     await this.notifications.notifyUser(
       seller.id,
-      'اتصال به پرونده',
-      `شما به پرونده ${caseRecord.caseNumber} متصل شدید.`,
+      'Linked to case',
+      `You have been linked to case ${caseRecord.caseNumber}.`,
       id,
     );
 
@@ -148,7 +148,7 @@ export class CasesService {
   async requestAppraisal(id: string, userId: string) {
     const caseRecord = await this.findOne(id, userId, UserRole.ADMIN);
     if (caseRecord.status !== CaseStatus.BANK_APPROVED) {
-      throw new BadRequestException('ابتدا باید تأیید بانک دریافت شود');
+      throw new BadRequestException('Bank approval is required first');
     }
 
     await this.prisma.appraisalRequest.upsert({
@@ -157,14 +157,14 @@ export class CasesService {
       update: {},
     });
 
-    const updated = await this.transition(id, userId, CaseStatus.APPRAISAL_REQUESTED, 'درخواست ارزیابی ملک ثبت شد');
+    const updated = await this.transition(id, userId, CaseStatus.APPRAISAL_REQUESTED, 'Property valuation requested');
 
     const appraisers = await this.prisma.user.findMany({ where: { role: UserRole.APPRAISER } });
     for (const appraiser of appraisers) {
       await this.notifications.notifyUser(
         appraiser.id,
-        'درخواست ارزیابی جدید',
-        `پرونده ${caseRecord.caseNumber} برای ارزیابی آماده است.`,
+        'New valuation request',
+        `Case ${caseRecord.caseNumber} is ready for valuation.`,
         id,
       );
     }
@@ -175,19 +175,19 @@ export class CasesService {
   async completeDeal(id: string, userId: string) {
     const caseRecord = await this.findOne(id, userId, UserRole.ADMIN);
     if (caseRecord.status !== CaseStatus.READY_FOR_DEAL) {
-      throw new BadRequestException('پرونده باید آماده معامله باشد');
+      throw new BadRequestException('Case must be ready for deal');
     }
-    await this.transition(id, userId, CaseStatus.DEAL_IN_PROGRESS, 'فرآیند معامله آغاز شد');
-    return this.transition(id, userId, CaseStatus.COMPLETED, 'معامله با موفقیت تکمیل شد');
+    await this.transition(id, userId, CaseStatus.DEAL_IN_PROGRESS, 'Deal process started');
+    return this.transition(id, userId, CaseStatus.COMPLETED, 'Deal completed successfully');
   }
 
   async cancel(id: string, userId: string, role: UserRole) {
     const caseRecord = await this.findOne(id, userId, role);
     const terminalStatuses: CaseStatus[] = [CaseStatus.COMPLETED, CaseStatus.CANCELLED];
     if (terminalStatuses.includes(caseRecord.status)) {
-      throw new BadRequestException('این پرونده قابل لغو نیست');
+      throw new BadRequestException('This case cannot be cancelled');
     }
-    return this.transition(id, userId, CaseStatus.CANCELLED, 'پرونده لغو شد');
+    return this.transition(id, userId, CaseStatus.CANCELLED, 'Case cancelled');
   }
 
   private async transition(caseId: string, userId: string, toStatus: CaseStatus, message: string) {
@@ -195,7 +195,7 @@ export class CasesService {
     if (!caseRecord) throw new NotFoundException();
 
     if (!canTransition(caseRecord.status, toStatus)) {
-      throw new BadRequestException(`انتقال از ${caseRecord.status} به ${toStatus} مجاز نیست`);
+      throw new BadRequestException(`Transition from ${caseRecord.status} to ${toStatus} is not allowed`);
     }
 
     const updated = await this.prisma.case.update({
@@ -208,8 +208,8 @@ export class CasesService {
 
     await this.notifications.notifyUser(
       caseRecord.buyerId,
-      'تغییر وضعیت پرونده',
-      `وضعیت پرونده ${caseRecord.caseNumber}: ${message}`,
+      'Case status updated',
+      `Case ${caseRecord.caseNumber}: ${message}`,
       caseId,
     );
 
@@ -278,6 +278,6 @@ export class CasesService {
     if (role === UserRole.APPRAISER && appraiserStatuses.includes(caseRecord.status)) {
       return;
     }
-    throw new ForbiddenException('دسترسی به این پرونده مجاز نیست');
+    throw new ForbiddenException('Access to this case is not allowed');
   }
 }

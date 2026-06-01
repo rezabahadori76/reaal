@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { getDashboardRoute } from '@/lib/auth-context';
 import { AuthBackground, MeshBackground } from '@/components/background';
 import { Logo } from '@/components/ui';
-import { LanguageSwitcher, useLocale } from '@/lib/i18n';
+import { useLocale } from '@/lib/i18n';
 
 export default function RegisterPage() {
   const { t } = useLocale();
@@ -43,19 +43,15 @@ export default function RegisterPage() {
 
       <div className="flex-1 flex items-center justify-center p-6 relative">
         <MeshBackground className="lg:hidden" />
-        <div className="w-full max-w-md relative z-10 animate-slide-up">
-          <div className="mb-8 lg:hidden flex items-center justify-between">
+        <div className="w-full max-w-md relative z-10">
+          <div className="mb-8 lg:hidden">
             <Logo size="lg" />
-            <LanguageSwitcher />
           </div>
 
           <div className="glass-strong p-8">
-            <div className="mb-8 hidden lg:flex items-start justify-between gap-4">
-              <div>
-                <h1 className="text-2xl font-bold text-white">{t('createAccount')}</h1>
-                <p className="text-slate-400 text-sm mt-2">{t('createAccountSubtitle')}</p>
-              </div>
-              <LanguageSwitcher />
+            <div className="mb-8 hidden lg:block">
+              <h1 className="text-2xl font-bold text-white">{t('createAccount')}</h1>
+              <p className="text-slate-400 text-sm mt-2">{t('createAccountSubtitle')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -64,7 +60,7 @@ export default function RegisterPage() {
               )}
               <div>
                 <label className="label">{t('fullName')}</label>
-                <input className="input" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} required placeholder="Ali Al-Harthy" />
+                <input className="input" value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} required placeholder="John Smith" />
               </div>
               <div>
                 <label className="label">{t('email')}</label>
@@ -72,7 +68,7 @@ export default function RegisterPage() {
               </div>
               <div>
                 <label className="label">{t('phone')}</label>
-                <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+968 9123 4567" />
+                <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+1 512 555 0100" />
               </div>
               <div>
                 <label className="label">{t('role')}</label>

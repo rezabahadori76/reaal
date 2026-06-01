@@ -97,22 +97,6 @@ export const STATUS_LABELS: Record<CaseStatus, string> = {
   COMPLETED: 'Completed',
   CANCELLED: 'Cancelled',
 };
-
-export const STATUS_LABELS_AR: Record<CaseStatus, string> = {
-  DRAFT: 'مسودة',
-  SUBMITTED: 'تم الإرسال',
-  BANK_REVIEW: 'مراجعة البنك',
-  BANK_APPROVED: 'اعتماد البنك',
-  BANK_REJECTED: 'رفض البنك',
-  APPRAISAL_REQUESTED: 'طلب التثمين',
-  APPRAISAL_IN_PROGRESS: 'التثمين جارٍ',
-  APPRAISAL_COMPLETED: 'اكتمل التثمين',
-  READY_FOR_DEAL: 'جاهز للصفقة',
-  DEAL_IN_PROGRESS: 'الصفقة جارية',
-  COMPLETED: 'مكتمل',
-  CANCELLED: 'ملغي',
-};
-
 export const STATUS_COLORS: Record<CaseStatus, string> = {
   DRAFT: 'bg-slate-500/15 text-slate-300 border-slate-500/20',
   SUBMITTED: 'bg-blue-500/15 text-blue-300 border-blue-500/20',
@@ -135,15 +119,6 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   APPRAISER: 'Valuation',
   ADMIN: 'Admin',
 };
-
-export const ROLE_LABELS_AR: Record<UserRole, string> = {
-  BUYER: 'المشتري',
-  SELLER: 'البائع',
-  BANK_OPS: 'البنك',
-  APPRAISER: 'التثمين',
-  ADMIN: 'المدير',
-};
-
 export const ROLE_ROUTES: Record<UserRole, string> = {
   BUYER: '/buyer',
   SELLER: '/seller',
@@ -156,7 +131,7 @@ export function formatPrice(amount?: number) {
   if (!amount) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'OMR',
+    currency: 'USD',
     maximumFractionDigits: 0,
   }).format(amount / 1000);
 }

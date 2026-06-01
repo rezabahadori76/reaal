@@ -28,9 +28,9 @@ export class BankService {
       include: { bankCreditCheck: true, buyer: true },
     });
 
-    if (!caseRecord) throw new NotFoundException('پرونده یافت نشد');
+    if (!caseRecord) throw new NotFoundException('Case not found');
     if (caseRecord.status !== CaseStatus.BANK_REVIEW) {
-      throw new BadRequestException('پرونده در وضعیت بررسی بانک نیست');
+      throw new BadRequestException('Case is not in bank review status');
     }
 
     const mockResult = this.applyMockLogic(caseRecord, dto);
@@ -51,13 +51,13 @@ export class BankService {
 
     if (mockResult.result === BankCheckResult.APPROVED) {
       newStatus = CaseStatus.BANK_APPROVED;
-      message = `اعتبارسنجی تأیید شد. سقف وام: ${mockResult.maxLoanAmount?.toLocaleString('fa-IR')} ریال`;
+      message = `Credit check approved. Max loan: $${((mockResult.maxLoanAmount ?? 0) / 1000).toLocaleString('en-US')}`;
     } else if (mockResult.result === BankCheckResult.CONDITIONAL) {
       newStatus = CaseStatus.BANK_APPROVED;
-      message = 'اعتبارسنجی مشروط تأیید شد — ارائه مدارک تکمیلی لازم است';
+      message = 'Conditional approval — additional documents required';
     } else {
       newStatus = CaseStatus.BANK_REJECTED;
-      message = mockResult.rejectionReason || 'درخواست وام رد شد';
+      message = mockResult.rejectionReason || 'Loan request rejected';
     }
 
     const updated = await this.prisma.case.update({
@@ -82,8 +82,8 @@ export class BankService {
 
     await this.notifications.notifyUser(
       caseRecord.buyerId,
-      'نتیجه اعتبارسنجی بانک',
-      `پرونده ${caseRecord.caseNumber}: ${message}`,
+      'Bank credit check result',
+      `Case ${caseRecord.caseNumber}: ${message}`,
       caseId,
     );
 
@@ -91,8 +91,8 @@ export class BankService {
     for (const admin of admins) {
       await this.notifications.notifyUser(
         admin.id,
-        'نتیجه بررسی بانک',
-        `پرونده ${caseRecord.caseNumber}: ${message}`,
+        'Bank review result',
+        `Case ${caseRecord.caseNumber}: ${message}`,
         caseId,
       );
     }
@@ -113,7 +113,7 @@ export class BankService {
         result: BankCheckResult.REJECTED,
         maxLoanAmount: null,
         interestRate: null,
-        rejectionReason: dto.rejectionReason || 'عدم تأیید شرایط اعتباری',
+        rejectionReason: dto.rejectionReason || 'Credit conditions not met',
       };
     }
 

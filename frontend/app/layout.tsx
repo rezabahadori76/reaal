@@ -5,7 +5,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'MulkPlus | Smart Property Finance',
-  description: 'Integrated property purchase and mortgage finance platform for Oman.',
+  description: 'Integrated property purchase and mortgage finance platform.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

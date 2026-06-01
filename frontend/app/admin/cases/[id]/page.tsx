@@ -12,7 +12,7 @@ import { Case } from '@/lib/types';
 import { useLocale } from '@/lib/i18n';
 
 export default function AdminCaseDetailPage() {
-  const { t, isRtl } = useLocale();
+  const { t } = useLocale();
   const { id } = useParams<{ id: string }>();
   const { token, user } = useAuth();
   const [caseItem, setCaseItem] = useState<Case | null>(null);
@@ -32,7 +32,7 @@ export default function AdminCaseDetailPage() {
     <RequireAuth roles={['ADMIN']}>
       <DashboardLayout>
         <Link href="/admin/cases" className="inline-flex items-center gap-1 text-sm text-accent-light hover:text-accent transition-colors mb-6 group">
-          {isRtl ? '→' : '←'} {t('back')}
+          ← {t('back')}
         </Link>
         {loading ? <LoadingSpinner /> : caseItem && token && (
           <>

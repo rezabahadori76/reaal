@@ -1,87 +1,87 @@
-# پلتفرم یکپارچه تأمین مالی و خرید ملک (MVP)
+# Integrated Real Estate Finance Platform (MVP)
 
-پلتفرمی برای ساده‌سازی فرآیند خرید ملک با تسهیلات بانکی — اتصال **خریدار**، **فروشنده**، **بانک** و **شرکت ارزیابی (تثمین)** در یک جریان کاری یکپارچه.
+A platform to simplify property purchase with bank financing — connecting **buyers**, **sellers**, **banks**, and **valuation companies** in one unified workflow.
 
-## ویژگی‌های MVP
+## MVP Features
 
-- ثبت درخواست خریدار و پیگیری پرونده
-- Mock اعتبارسنجی بانکی با محاسبه خودکار سقف وام
-- ماژول ارزیابی و ارزش‌گذاری ملک
-- اتصال خریدار و فروشنده
-- داشبورد مدیریت با آمار و timeline
-- پورتال جداگانه برای هر نقش (خریدار، فروشنده، بانک، ارزیاب، مدیر)
-- اعلان‌های درون‌سیستمی
-- رابط کاربری فارسی RTL
+- Buyer request submission and case tracking
+- Mock bank credit check with automatic loan limit calculation
+- Property valuation module
+- Buyer–seller linking
+- Admin dashboard with stats and timeline
+- Separate portal for each role (buyer, seller, bank, appraiser, admin)
+- In-app notifications
+- English UI (LTR)
 
 ## Tech Stack
 
-| لایه | فناوری |
-|------|--------|
+| Layer | Technology |
+|-------|------------|
 | Backend | NestJS + Prisma + PostgreSQL |
 | Frontend | Next.js 14 + Tailwind CSS |
 | Auth | JWT + RBAC |
 | Database | SQLite (dev) / PostgreSQL (prod) |
 
-## راه‌اندازی سریع
+## Quick Start
 
-### پیش‌نیازها
+### Prerequisites
 
 - Node.js 18+
 - npm
 
-> PostgreSQL اختیاری است — در حالت dev از SQLite استفاده می‌شود. برای production می‌توانید `docker compose up -d` را اجرا کنید.
+> PostgreSQL is optional — dev mode uses SQLite. For production, run `docker compose up -d`.
 
-### نصب
+### Setup
 
 ```bash
-# 1. کلون و نصب
+# 1. Clone and install
 npm run setup
 
-# 2. کپی env
+# 2. Copy env
 cp .env.example .env
 
-# 3. Migration و Seed
+# 3. Migration and seed
 cd backend
 npx prisma migrate dev
 npm run prisma:seed
 cd ..
 
-# 4. اجرا
+# 4. Run
 npm run dev
 ```
 
 - **Frontend:** http://localhost:3000
 - **Backend API:** http://localhost:3001/api
 
-## حساب‌های دمو
+## Demo Accounts
 
-رمز عبور همه: `123456`
+Password for all: `123456`
 
-| نقش | ایمیل |
-|-----|-------|
-| مدیر | admin@platform.ir |
-| خریدار | buyer@demo.ir |
-| فروشنده | seller@demo.ir |
-| بانک | bank@demo.ir |
-| ارزیاب | appraiser@demo.ir |
+| Role | Email |
+|------|-------|
+| Admin | admin@platform.com |
+| Buyer | buyer@demo.com |
+| Seller | seller@demo.com |
+| Bank | bank@demo.com |
+| Appraiser | appraiser@demo.com |
 
-## سناریوی دمو
+## Demo Scenario
 
-یک پرونده نمونه (`RE-2026-DEMO01`) از قبل seed شده و در وضعیت **بررسی بانک** است:
+A sample case (`RE-2026-DEMO01`) is pre-seeded in **Bank review** status:
 
-1. **بانک** (`bank@demo.ir`) → تأیید یا رد اعتبارسنجی
-2. **مدیر** (`admin@platform.ir`) → درخواست ارزیابی
-3. **ارزیاب** (`appraiser@demo.ir`) → پذیرش و ثبت گزارش ارزش
-4. **مدیر** → تکمیل معامله
-5. **خریدار/فروشنده** → مشاهده وضعیت نهایی
+1. **Bank** (`bank@demo.com`) → approve or reject credit check
+2. **Admin** (`admin@platform.com`) → request valuation
+3. **Appraiser** (`appraiser@demo.com`) → accept and submit valuation report
+4. **Admin** → complete deal
+5. **Buyer/Seller** → view final status
 
-## جریان کاری
+## Workflow
 
 ```
-ثبت درخواست → اعتبارسنجی بانک → ارزیابی ملک → آماده معامله → تکمیل
+Application → Bank credit check → Property valuation → Ready for deal → Completed
 ```
 
-## ساختار پروژه
+## Project Structure
 
 ```
 ├── backend/          # NestJS API
@@ -95,36 +95,36 @@ npm run dev
 │       └── dashboard/
 ├── frontend/         # Next.js App
 │   ├── app/
-│   │   ├── admin/    # پنل مدیریت
-│   │   ├── buyer/    # پورتال خریدار
-│   │   ├── seller/   # پورتال فروشنده
-│   │   ├── bank/     # پورتال بانک
+│   │   ├── admin/    # Admin panel
+│   │   ├── buyer/    # Buyer portal
+│   │   ├── seller/   # Seller portal
+│   │   ├── bank/     # Bank portal
 │   │   └── appraiser/
 │   └── components/
 └── docker-compose.yml
 ```
 
-## API Endpoints (خلاصه)
+## API Endpoints (Summary)
 
-| Method | Path | توضیح |
-|--------|------|-------|
-| POST | /api/auth/login | ورود |
-| POST | /api/auth/register | ثبت‌نام |
-| GET | /api/cases | لیست پرونده‌ها |
-| POST | /api/cases | ایجاد پرونده |
-| POST | /api/cases/:id/submit | ارسال درخواست |
-| POST | /api/cases/:id/send-to-bank | ارجاع به بانک |
-| POST | /api/bank/cases/:id/review | بررسی اعتباری |
-| POST | /api/appraisal/cases/:id/submit | ثبت گزارش ارزیابی |
-| GET | /api/dashboard/stats | آمار مدیریت |
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | /api/auth/login | Login |
+| POST | /api/auth/register | Register |
+| GET | /api/cases | List cases |
+| POST | /api/cases | Create case |
+| POST | /api/cases/:id/submit | Submit request |
+| POST | /api/cases/:id/send-to-bank | Send to bank |
+| POST | /api/bank/cases/:id/review | Credit review |
+| POST | /api/appraisal/cases/:id/submit | Submit valuation report |
+| GET | /api/dashboard/stats | Admin stats |
 
-## مدل درآمد (آینده)
+## Revenue Model (Future)
 
-- کارمزد ارزیابی ملک
-- سهم همکاری با بانک
-- کارمزد فروشنده
-- هزینه خدمات خریدار
+- Property valuation fees
+- Bank partnership share
+- Seller commission
+- Buyer service fees
 
 ---
 
-نسخه MVP — آماده نمایش به سرمایه‌گذاران
+MVP version — ready for investor demos
