@@ -34,10 +34,13 @@ export default function BuyerDashboard() {
         {cases.length > 0 && <WorkflowSteps currentStatus={cases[0].status} />}
 
         {notifications.filter((n) => !n.isRead).length > 0 && (
-          <div className="card p-4 mt-6 border-amber-200 bg-amber-50">
-            <h3 className="font-semibold text-sm mb-2">اعلان‌های جدید</h3>
+          <div className="glass p-5 mt-6 border-gold/20 bg-gold/[0.03]">
+            <h3 className="font-semibold text-sm text-gold-light mb-3 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-gold animate-pulse" />
+              اعلان‌های جدید
+            </h3>
             {notifications.filter((n) => !n.isRead).slice(0, 3).map((n) => (
-              <p key={n.id} className="text-sm text-slate-600">{n.title}: {n.message}</p>
+              <p key={n.id} className="text-sm text-slate-400">{n.title}: {n.message}</p>
             ))}
           </div>
         )}

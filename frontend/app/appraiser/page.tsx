@@ -28,14 +28,14 @@ export default function AppraiserDashboard() {
         ) : (
           <div className="space-y-3">
             {pending.map((item) => (
-              <Link key={item.id} href={`/appraiser/cases/${item.case.id}`} className="card p-5 hover:shadow-md transition-shadow block">
-                <div className="flex justify-between">
+              <Link key={item.id} href={`/appraiser/cases/${item.case.id}`} className="card-hover p-6 block group">
+                <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-mono text-sm text-brand-600">{item.case.caseNumber}</p>
-                    <p className="font-medium mt-1">{item.case.propertyAddress}</p>
-                    <p className="text-sm text-slate-500">{item.case.propertyType} · خریدار: {item.case.buyer.fullName}</p>
+                    <span className="font-mono text-xs text-accent-light bg-accent/10 px-2 py-0.5 rounded-md border border-accent/20">{item.case.caseNumber}</span>
+                    <p className="font-semibold text-white mt-3 group-hover:text-accent-light transition-colors">{item.case.propertyAddress}</p>
+                    <p className="text-sm text-slate-500 mt-1">{item.case.propertyType} · خریدار: {item.case.buyer.fullName}</p>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-700 h-fit">
+                  <span className="badge bg-purple-500/15 text-purple-300 border-purple-500/20">
                     {item.status === 'PENDING' ? 'جدید' : 'در حال انجام'}
                   </span>
                 </div>

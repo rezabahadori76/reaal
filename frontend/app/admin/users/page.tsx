@@ -17,32 +17,40 @@ export default function AdminUsersPage() {
     api.getUsers(token).then(setUsers).finally(() => setLoading(false));
   }, [token]);
 
+  const roleColors: Record<string, string> = {
+    ADMIN: 'bg-purple-500/15 text-purple-300 border-purple-500/20',
+    BUYER: 'bg-blue-500/15 text-blue-300 border-blue-500/20',
+    SELLER: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20',
+    BANK_OPS: 'bg-gold/15 text-gold-light border-gold/20',
+    APPRAISER: 'bg-violet-500/15 text-violet-300 border-violet-500/20',
+  };
+
   return (
     <RequireAuth roles={['ADMIN']}>
       <DashboardLayout>
-        <PageHeader title="مدیریت کاربران" subtitle={`${users.length} کاربر`} />
+        <PageHeader title="مدیریت کاربران" subtitle={`${users.length} کاربر ثبت‌شده`} badge="مدیریت" />
         {loading ? <LoadingSpinner /> : (
-          <div className="card overflow-hidden">
+          <div className="glass overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 border-b">
-                <tr>
-                  <th className="text-right p-3 font-medium">نام</th>
-                  <th className="text-right p-3 font-medium">ایمیل</th>
-                  <th className="text-right p-3 font-medium">نقش</th>
-                  <th className="text-right p-3 font-medium">تماس</th>
+              <thead>
+                <tr className="border-b border-white/5">
+                  <th className="text-right p-4 font-medium text-slate-400">نام</th>
+                  <th className="text-right p-4 font-medium text-slate-400">ایمیل</th>
+                  <th className="text-right p-4 font-medium text-slate-400">نقش</th>
+                  <th className="text-right p-4 font-medium text-slate-400">تماس</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u.id} className="border-b last:border-0 hover:bg-slate-50">
-                    <td className="p-3">{u.fullName}</td>
-                    <td className="p-3 font-mono text-xs" dir="ltr">{u.email}</td>
-                    <td className="p-3">
-                      <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-xs">
+                  <tr key={u.id} className="border-b border-white/[0.03] last:border-0 hover:bg-white/[0.02] transition-colors">
+                    <td className="p-4 font-medium text-white">{u.fullName}</td>
+                    <td className="p-4 font-mono text-xs text-slate-400" dir="ltr">{u.email}</td>
+                    <td className="p-4">
+                      <span className={`badge ${roleColors[u.role]}`}>
                         {ROLE_LABELS[u.role]}
                       </span>
                     </td>
-                    <td className="p-3 text-slate-500">{u.phone || '—'}</td>
+                    <td className="p-4 text-slate-500">{u.phone || '—'}</td>
                   </tr>
                 ))}
               </tbody>

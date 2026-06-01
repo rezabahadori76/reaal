@@ -99,18 +99,18 @@ export const STATUS_LABELS: Record<CaseStatus, string> = {
 };
 
 export const STATUS_COLORS: Record<CaseStatus, string> = {
-  DRAFT: 'bg-slate-100 text-slate-700',
-  SUBMITTED: 'bg-blue-100 text-blue-700',
-  BANK_REVIEW: 'bg-amber-100 text-amber-700',
-  BANK_APPROVED: 'bg-emerald-100 text-emerald-700',
-  BANK_REJECTED: 'bg-red-100 text-red-700',
-  APPRAISAL_REQUESTED: 'bg-purple-100 text-purple-700',
-  APPRAISAL_IN_PROGRESS: 'bg-indigo-100 text-indigo-700',
-  APPRAISAL_COMPLETED: 'bg-teal-100 text-teal-700',
-  READY_FOR_DEAL: 'bg-green-100 text-green-700',
-  DEAL_IN_PROGRESS: 'bg-orange-100 text-orange-700',
-  COMPLETED: 'bg-emerald-100 text-emerald-800',
-  CANCELLED: 'bg-gray-100 text-gray-600',
+  DRAFT: 'bg-slate-500/15 text-slate-300 border-slate-500/20',
+  SUBMITTED: 'bg-blue-500/15 text-blue-300 border-blue-500/20',
+  BANK_REVIEW: 'bg-gold/15 text-gold-light border-gold/20',
+  BANK_APPROVED: 'bg-accent/15 text-accent-light border-accent/20',
+  BANK_REJECTED: 'bg-red-500/15 text-red-300 border-red-500/20',
+  APPRAISAL_REQUESTED: 'bg-purple-500/15 text-purple-300 border-purple-500/20',
+  APPRAISAL_IN_PROGRESS: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/20',
+  APPRAISAL_COMPLETED: 'bg-teal-500/15 text-teal-300 border-teal-500/20',
+  READY_FOR_DEAL: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/20',
+  DEAL_IN_PROGRESS: 'bg-orange-500/15 text-orange-300 border-orange-500/20',
+  COMPLETED: 'bg-accent/20 text-accent-light border-accent/30',
+  CANCELLED: 'bg-slate-500/10 text-slate-500 border-slate-500/15',
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {

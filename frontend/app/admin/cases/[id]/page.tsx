@@ -29,7 +29,7 @@ export default function AdminCaseDetailPage() {
   return (
     <RequireAuth roles={['ADMIN']}>
       <DashboardLayout>
-        <Link href="/admin/cases" className="text-sm text-brand-600 hover:underline mb-4 inline-block">
+        <Link href="/admin/cases" className="inline-flex items-center gap-1 text-sm text-accent-light hover:text-accent transition-colors mb-6 group">
           ← بازگشت به لیست
         </Link>
         {loading ? <LoadingSpinner /> : caseItem && token && (

@@ -29,7 +29,7 @@ export default function BuyerCaseDetailPage() {
   return (
     <RequireAuth roles={['BUYER']}>
       <DashboardLayout>
-        <Link href="/buyer" className="text-sm text-brand-600 hover:underline mb-4 inline-block">← بازگشت</Link>
+        <Link href="/buyer" className="inline-flex items-center gap-1 text-sm text-accent-light hover:text-accent transition-colors mb-6">← بازگشت</Link>
         {loading ? <LoadingSpinner /> : caseItem && (
           <>
             <WorkflowSteps currentStatus={caseItem.status} />

@@ -29,7 +29,7 @@ export default function BankCaseDetailPage() {
   return (
     <RequireAuth roles={['BANK_OPS', 'ADMIN']}>
       <DashboardLayout>
-        <Link href="/bank" className="text-sm text-brand-600 hover:underline mb-4 inline-block">← بازگشت</Link>
+        <Link href="/bank" className="inline-flex items-center gap-1 text-sm text-accent-light hover:text-accent transition-colors mb-6">← بازگشت</Link>
         {loading ? <LoadingSpinner /> : caseItem && token && (
           <CaseDetailView caseItem={caseItem} token={token} onRefresh={refresh} role={user?.role} />
         )}
