@@ -67,8 +67,15 @@ The production start command:
 - runs Prisma migrations
 - seeds the demo database
 - starts the NestJS API on `API_PORT` (default: `3001`)
+- binds both services to `0.0.0.0` so the app can be opened through the server IP
 - starts Next.js on `PORT` (default: `3000`)
 - proxies `/api/*` from Next.js to the API server
+
+If your host exposes a public port, open:
+
+```text
+http://SERVER_IP:PORT
+```
 
 ## Demo Accounts
 

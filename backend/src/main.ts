@@ -19,8 +19,9 @@ async function bootstrap() {
   );
 
   const port = process.env.API_PORT || 3001;
-  await app.listen(port);
-  console.log(`API running on http://localhost:${port}/api`);
+  const host = process.env.API_HOST || '0.0.0.0';
+  await app.listen(port, host);
+  console.log(`API running on http://${host}:${port}/api`);
 }
 
 bootstrap();
