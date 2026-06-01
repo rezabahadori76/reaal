@@ -51,7 +51,24 @@ npm run dev
 ```
 
 - **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:3001/api
+- **Backend API:** http://localhost:3000/api (proxied to the API server)
+
+## Production Start
+
+For a single-host deployment, build and start from the repository root:
+
+```bash
+npm run build
+npm start
+```
+
+The production start command:
+
+- runs Prisma migrations
+- seeds the demo database
+- starts the NestJS API on `API_PORT` (default: `3001`)
+- starts Next.js on `PORT` (default: `3000`)
+- proxies `/api/*` from Next.js to the API server
 
 ## Demo Accounts
 
