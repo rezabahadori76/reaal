@@ -7,9 +7,11 @@ import { PageHeader, LoadingSpinner, EmptyState } from '@/components/ui';
 import { CaseCard } from '@/components/case-components';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
-import { Case, formatPrice } from '@/lib/types';
+import { Case } from '@/lib/types';
+import { formatMoney, useLocale } from '@/lib/i18n';
 
 export default function SellerDashboard() {
+  const { t, locale } = useLocale();
   const { token } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,12 +24,12 @@ export default function SellerDashboard() {
   return (
     <RequireAuth roles={['SELLER']}>
       <DashboardLayout>
-        <PageHeader title="پرونده‌های فروش" subtitle="ملک‌های متصل‌شده به شما" />
+        <PageHeader title={t('sellerCases')} subtitle={t('sellerCasesSubtitle')} />
 
         {loading ? <LoadingSpinner /> : cases.length === 0 ? (
           <EmptyState
-            title="پرونده‌ای به شما متصل نشده"
-            description="پس از تأیید خریدار توسط مدیر، پرونده فروش اینجا نمایش داده می‌شود."
+            title={t('noSellerCases')}
+            description={t('noSellerCasesDesc')}
           />
         ) : (
           <div className="space-y-3">
@@ -36,7 +38,7 @@ export default function SellerDashboard() {
                 <CaseCard caseItem={c} href={`/seller/cases/${c.id}`} />
                 {c.status === 'COMPLETED' && c.askingPrice && (
                   <p className="text-sm text-emerald-600 mr-4 mt-1">
-                    مبلغ دریافتی: {formatPrice(c.askingPrice)}
+                    {t('receivedAmount')}: {formatMoney(c.askingPrice, locale)}
                   </p>
                 )}
               </div>

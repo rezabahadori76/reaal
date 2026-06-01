@@ -7,8 +7,10 @@ import { CaseCard } from '@/components/case-components';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
 import { Case } from '@/lib/types';
+import { useLocale } from '@/lib/i18n';
 
 export default function AdminCasesPage() {
+  const { t } = useLocale();
   const { token } = useAuth();
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,9 +23,9 @@ export default function AdminCasesPage() {
   return (
     <RequireAuth roles={['ADMIN']}>
       <DashboardLayout>
-        <PageHeader title="مدیریت پرونده‌ها" subtitle={`${cases.length} پرونده`} />
+        <PageHeader title={t('casesManagement')} subtitle={`${cases.length} ${t('caseCount')}`} />
         {loading ? <LoadingSpinner /> : cases.length === 0 ? (
-          <EmptyState title="پرونده‌ای وجود ندارد" />
+          <EmptyState title={t('noCases')} />
         ) : (
           <div className="space-y-3">
             {cases.map((c) => (

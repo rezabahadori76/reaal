@@ -1,3 +1,5 @@
+import { useLocale } from '@/lib/i18n';
+
 export function MeshBackground({ className = '' }: { className?: string }) {
   return (
     <div className={`fixed inset-0 -z-10 overflow-hidden ${className}`}>
@@ -18,6 +20,8 @@ export function MeshBackground({ className = '' }: { className?: string }) {
 }
 
 export function AuthBackground() {
+  const { t } = useLocale();
+
   return (
     <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-surface-50">
       <div className="absolute inset-0 bg-mesh" />
@@ -27,21 +31,21 @@ export function AuthBackground() {
         <div className="animate-slide-up">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 text-accent-light text-sm font-medium mb-8">
             <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-            پلتفرم هوشمند تأمین مالی مسکن
+            {t('authBadge')}
           </div>
           <h2 className="text-4xl font-bold leading-tight mb-6">
-            خرید خانه
+            {t('authTitle')}
             <br />
-            <span className="gradient-text">بدون دردسر</span>
+            <span className="gradient-text">{t('authTitleHighlight')}</span>
           </h2>
           <p className="text-slate-400 text-lg leading-relaxed max-w-md">
-            اتصال یکپارچه خریدار، فروشنده، بانک و ارزیاب — از ثبت درخواست تا دریافت کلید، همه در یک پلتفرم.
+            {t('authDescription')}
           </p>
           <div className="mt-12 grid grid-cols-3 gap-6">
             {[
-              { val: '۴', label: 'بازیگر اصلی' },
-              { val: '۱۰x', label: 'سرعت بیشتر' },
-              { val: '۱۰۰٪', label: 'شفافیت' },
+              { val: '4', label: t('mainParties') },
+              { val: '10x', label: t('speed') },
+              { val: '100%', label: t('transparency') },
             ].map((s) => (
               <div key={s.label} className="glass p-4 text-center">
                 <p className="text-2xl font-bold gradient-text">{s.val}</p>

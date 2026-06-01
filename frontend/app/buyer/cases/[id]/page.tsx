@@ -9,8 +9,10 @@ import { CaseDetailView, WorkflowSteps } from '@/components/case-components';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
 import { Case } from '@/lib/types';
+import { useLocale } from '@/lib/i18n';
 
 export default function BuyerCaseDetailPage() {
+  const { t, isRtl } = useLocale();
   const { id } = useParams<{ id: string }>();
   const { token, user } = useAuth();
   const [caseItem, setCaseItem] = useState<Case | null>(null);
@@ -29,7 +31,7 @@ export default function BuyerCaseDetailPage() {
   return (
     <RequireAuth roles={['BUYER']}>
       <DashboardLayout>
-        <Link href="/buyer" className="inline-flex items-center gap-1 text-sm text-accent-light hover:text-accent transition-colors mb-6">← بازگشت</Link>
+        <Link href="/buyer" className="inline-flex items-center gap-1 text-sm text-accent-light hover:text-accent transition-colors mb-6">{isRtl ? '→' : '←'} {t('back')}</Link>
         {loading ? <LoadingSpinner /> : caseItem && (
           <>
             <WorkflowSteps currentStatus={caseItem.status} />

@@ -6,14 +6,16 @@ import { DashboardLayout, RequireAuth } from '@/components/layout';
 import { PageHeader } from '@/components/ui';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
+import { useLocale } from '@/lib/i18n';
 
 export default function NewCasePage() {
+  const { t } = useLocale();
   const { token } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     propertyAddress: '',
-    propertyType: 'آپارتمان',
+    propertyType: 'Apartment',
     propertyArea: '',
     askingPrice: '',
     buyerIncome: '',
@@ -38,7 +40,7 @@ export default function NewCasePage() {
       await api.submitCase(newCase.id, token);
       router.push('/buyer');
     } catch (err: unknown) {
-      alert(err instanceof Error ? err.message : 'خطا');
+      alert(err instanceof Error ? err.message : 'Error');
     } finally {
       setLoading(false);
     }
@@ -47,51 +49,51 @@ export default function NewCasePage() {
   return (
     <RequireAuth roles={['BUYER']}>
       <DashboardLayout>
-        <PageHeader title="ثبت درخواست خرید ملک" subtitle="اطلاعات ملک و شرایط مالی خود را وارد کنید" />
+        <PageHeader title={t('submitPropertyRequest')} subtitle={t('submitPropertySubtitle')} />
 
         <form onSubmit={handleSubmit} className="card p-6 max-w-2xl space-y-4">
           <div>
-            <label className="label">آدرس ملک</label>
-            <input className="input" value={form.propertyAddress} onChange={(e) => setForm({ ...form, propertyAddress: e.target.value })} required placeholder="تهران، سعادت‌آباد، ..." />
+            <label className="label">{t('propertyAddress')}</label>
+            <input className="input" value={form.propertyAddress} onChange={(e) => setForm({ ...form, propertyAddress: e.target.value })} required placeholder="Muscat, Al Mouj, Building 12" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">نوع ملک</label>
+              <label className="label">{t('propertyType')}</label>
               <select className="input" value={form.propertyType} onChange={(e) => setForm({ ...form, propertyType: e.target.value })}>
-                <option>آپارتمان</option>
-                <option>ویلایی</option>
-                <option>زمین</option>
-                <option>تجاری</option>
+                <option>Apartment</option>
+                <option>Villa</option>
+                <option>Land</option>
+                <option>Commercial</option>
               </select>
             </div>
             <div>
-              <label className="label">متراژ (متر مربع)</label>
+              <label className="label">{t('area')}</label>
               <input className="input" type="number" value={form.propertyArea} onChange={(e) => setForm({ ...form, propertyArea: e.target.value })} placeholder="120" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="label">قیمت درخواستی (ریال)</label>
-              <input className="input" type="number" value={form.askingPrice} onChange={(e) => setForm({ ...form, askingPrice: e.target.value })} placeholder="8000000000" />
+              <label className="label">{t('askingPrice')}</label>
+              <input className="input" type="number" value={form.askingPrice} onChange={(e) => setForm({ ...form, askingPrice: e.target.value })} placeholder="80000" />
             </div>
             <div>
-              <label className="label">درآمد ماهانه (ریال)</label>
-              <input className="input" type="number" value={form.buyerIncome} onChange={(e) => setForm({ ...form, buyerIncome: e.target.value })} placeholder="80000000" />
+              <label className="label">{t('monthlyIncome')}</label>
+              <input className="input" type="number" value={form.buyerIncome} onChange={(e) => setForm({ ...form, buyerIncome: e.target.value })} placeholder="1200" />
             </div>
           </div>
           <div>
-            <label className="label">منبع ملک</label>
+            <label className="label">{t('propertySource')}</label>
             <select className="input" value={form.propertySource} onChange={(e) => setForm({ ...form, propertySource: e.target.value })}>
-              <option value="EXTERNAL">انتخاب توسط خریدار</option>
-              <option value="PLATFORM">معرفی شده از پلتفرم</option>
+              <option value="EXTERNAL">{t('externalProperty')}</option>
+              <option value="PLATFORM">{t('platformProperty')}</option>
             </select>
           </div>
           <div>
-            <label className="label">توضیحات</label>
-            <textarea className="input" rows={3} value={form.buyerNotes} onChange={(e) => setForm({ ...form, buyerNotes: e.target.value })} placeholder="نیاز به وام ۷۰٪، خرید اول..." />
+            <label className="label">{t('notes')}</label>
+            <textarea className="input" rows={3} value={form.buyerNotes} onChange={(e) => setForm({ ...form, buyerNotes: e.target.value })} placeholder="First home purchase, looking for 70% financing..." />
           </div>
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? 'در حال ثبت...' : 'ثبت و ارسال درخواست'}
+            {loading ? t('submitting') : t('submitAndSend')}
           </button>
         </form>
       </DashboardLayout>

@@ -84,18 +84,33 @@ export interface DashboardStats {
 }
 
 export const STATUS_LABELS: Record<CaseStatus, string> = {
-  DRAFT: 'پیش‌نویس',
-  SUBMITTED: 'ثبت شده',
-  BANK_REVIEW: 'بررسی بانک',
-  BANK_APPROVED: 'تأیید بانک',
-  BANK_REJECTED: 'رد بانک',
-  APPRAISAL_REQUESTED: 'درخواست ارزیابی',
-  APPRAISAL_IN_PROGRESS: 'در حال ارزیابی',
-  APPRAISAL_COMPLETED: 'ارزیابی تکمیل',
-  READY_FOR_DEAL: 'آماده معامله',
-  DEAL_IN_PROGRESS: 'در حال معامله',
-  COMPLETED: 'تکمیل شده',
-  CANCELLED: 'لغو شده',
+  DRAFT: 'Draft',
+  SUBMITTED: 'Submitted',
+  BANK_REVIEW: 'Bank review',
+  BANK_APPROVED: 'Bank approved',
+  BANK_REJECTED: 'Bank rejected',
+  APPRAISAL_REQUESTED: 'Valuation requested',
+  APPRAISAL_IN_PROGRESS: 'Valuation in progress',
+  APPRAISAL_COMPLETED: 'Valuation completed',
+  READY_FOR_DEAL: 'Ready for deal',
+  DEAL_IN_PROGRESS: 'Deal in progress',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+};
+
+export const STATUS_LABELS_AR: Record<CaseStatus, string> = {
+  DRAFT: 'مسودة',
+  SUBMITTED: 'تم الإرسال',
+  BANK_REVIEW: 'مراجعة البنك',
+  BANK_APPROVED: 'اعتماد البنك',
+  BANK_REJECTED: 'رفض البنك',
+  APPRAISAL_REQUESTED: 'طلب التثمين',
+  APPRAISAL_IN_PROGRESS: 'التثمين جارٍ',
+  APPRAISAL_COMPLETED: 'اكتمل التثمين',
+  READY_FOR_DEAL: 'جاهز للصفقة',
+  DEAL_IN_PROGRESS: 'الصفقة جارية',
+  COMPLETED: 'مكتمل',
+  CANCELLED: 'ملغي',
 };
 
 export const STATUS_COLORS: Record<CaseStatus, string> = {
@@ -114,11 +129,19 @@ export const STATUS_COLORS: Record<CaseStatus, string> = {
 };
 
 export const ROLE_LABELS: Record<UserRole, string> = {
-  BUYER: 'خریدار',
-  SELLER: 'فروشنده',
-  BANK_OPS: 'بانک',
-  APPRAISER: 'ارزیاب',
-  ADMIN: 'مدیر',
+  BUYER: 'Buyer',
+  SELLER: 'Seller',
+  BANK_OPS: 'Bank',
+  APPRAISER: 'Valuation',
+  ADMIN: 'Admin',
+};
+
+export const ROLE_LABELS_AR: Record<UserRole, string> = {
+  BUYER: 'المشتري',
+  SELLER: 'البائع',
+  BANK_OPS: 'البنك',
+  APPRAISER: 'التثمين',
+  ADMIN: 'المدير',
 };
 
 export const ROLE_ROUTES: Record<UserRole, string> = {
@@ -131,11 +154,15 @@ export const ROLE_ROUTES: Record<UserRole, string> = {
 
 export function formatPrice(amount?: number) {
   if (!amount) return '—';
-  return new Intl.NumberFormat('fa-IR').format(amount) + ' ریال';
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'OMR',
+    maximumFractionDigits: 0,
+  }).format(amount / 1000);
 }
 
 export function formatDate(date: string) {
-  return new Intl.DateTimeFormat('fa-IR', {
+  return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

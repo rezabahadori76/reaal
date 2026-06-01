@@ -1,10 +1,12 @@
 import clsx from 'clsx';
-import { CaseStatus, STATUS_COLORS, STATUS_LABELS } from '@/lib/types';
+import { CaseStatus, STATUS_COLORS, STATUS_LABELS, STATUS_LABELS_AR } from '@/lib/types';
+import { useLocale } from '@/lib/i18n';
 
 export function StatusBadge({ status }: { status: CaseStatus }) {
+  const { locale } = useLocale();
   return (
     <span className={clsx('badge', STATUS_COLORS[status])}>
-      {STATUS_LABELS[status]}
+      {locale === 'ar' ? STATUS_LABELS_AR[status] : STATUS_LABELS[status]}
     </span>
   );
 }
@@ -108,6 +110,7 @@ export function PageHeader({
 }
 
 export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+  const { t } = useLocale();
   const sizes = { sm: 'text-lg', md: 'text-xl', lg: 'text-2xl' };
   return (
     <div className="flex items-center gap-3">
@@ -117,8 +120,8 @@ export function Logo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
         </svg>
       </div>
       <div>
-        <span className={clsx('font-bold text-white', sizes[size])}>ملک‌پلاس</span>
-        {size !== 'sm' && <p className="text-xs text-slate-500">تأمین مالی هوشمند</p>}
+        <span className={clsx('font-bold text-white', sizes[size])}>{t('appName')}</span>
+        {size !== 'sm' && <p className="text-xs text-slate-500">{t('appTagline')}</p>}
       </div>
     </div>
   );

@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Case, formatDate, formatPrice, STATUS_LABELS } from '@/lib/types';
+import { Case, STATUS_LABELS, STATUS_LABELS_AR } from '@/lib/types';
+import { formatLocalizedDate, formatMoney, useLocale } from '@/lib/i18n';
 import { StatusBadge } from './ui';
 
 export function CaseCard({ caseItem, href }: { caseItem: Case; href: string }) {
+  const { t, locale } = useLocale();
+
   return (
     <Link href={href} className="card-hover p-6 block group">
       <div className="flex items-start justify-between gap-4">
@@ -19,7 +21,7 @@ export function CaseCard({ caseItem, href }: { caseItem: Case; href: string }) {
           <p className="font-semibold text-white group-hover:text-accent-light transition-colors truncate">{caseItem.propertyAddress}</p>
           <p className="text-sm text-slate-500 mt-1.5">
             {caseItem.propertyType}
-            {caseItem.propertyArea ? ` · ${caseItem.propertyArea} متر` : ''}
+            {caseItem.propertyArea ? ` · ${caseItem.propertyArea} sqm` : ''}
           </p>
         </div>
         <StatusBadge status={caseItem.status} />
@@ -30,20 +32,21 @@ export function CaseCard({ caseItem, href }: { caseItem: Case; href: string }) {
           {caseItem.buyer.fullName}
         </span>
         {caseItem.askingPrice && (
-          <span className="text-gold-light font-medium">{formatPrice(caseItem.askingPrice)}</span>
+          <span className="text-gold-light font-medium">{formatMoney(caseItem.askingPrice, locale)}</span>
         )}
-        <span>{formatDate(caseItem.updatedAt)}</span>
+        <span>{formatLocalizedDate(caseItem.updatedAt, locale)}</span>
       </div>
     </Link>
   );
 }
 
 export function CaseTimeline({ events }: { events: Case['events'] }) {
-  if (!events?.length) return <p className="text-sm text-slate-500">رویدادی ثبت نشده</p>;
+  const { t, locale, isRtl } = useLocale();
+  if (!events?.length) return <p className="text-sm text-slate-500">{t('noEvents')}</p>;
 
   return (
     <div className="relative">
-      <div className="absolute top-2 bottom-2 right-[5px] w-px bg-gradient-to-b from-accent/50 via-accent/20 to-transparent" />
+      <div className={`absolute top-2 bottom-2 ${isRtl ? 'right-[5px]' : 'left-[5px]'} w-px bg-gradient-to-b from-accent/50 via-accent/20 to-transparent`} />
       <div className="space-y-6">
         {events.map((event, i) => (
           <div key={event.id} className="flex gap-4 relative">
@@ -52,7 +55,7 @@ export function CaseTimeline({ events }: { events: Case['events'] }) {
               <p className="text-sm font-medium text-slate-200">{event.message}</p>
               <p className="text-xs text-slate-500 mt-1">
                 {event.user?.fullName && <span className="text-slate-400">{event.user.fullName} · </span>}
-                {formatDate(event.createdAt)}
+                {formatLocalizedDate(event.createdAt, locale)}
               </p>
             </div>
           </div>
@@ -73,7 +76,7 @@ export function CaseDetailView({
   onRefresh: () => void;
   role?: string;
 }) {
-  const router = useRouter();
+  const { t, locale } = useLocale();
   const [loading, setLoading] = useState('');
   const [sellers, setSellers] = useState<{ id: string; fullName: string }[]>([]);
   const [selectedSeller, setSelectedSeller] = useState('');
@@ -88,7 +91,7 @@ export function CaseDetailView({
       await fn();
       onRefresh();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : 'خطا');
+      alert(e instanceof Error ? e.message : 'Error');
     } finally {
       setLoading('');
     }
@@ -111,17 +114,17 @@ export function CaseDetailView({
             <h2 className="text-xl font-bold text-white mt-3">{caseItem.propertyAddress}</h2>
             <p className="text-slate-400 mt-1">
               {caseItem.propertyType}
-              {caseItem.propertyArea ? ` · ${caseItem.propertyArea} متر مربع` : ''}
+              {caseItem.propertyArea ? ` · ${caseItem.propertyArea} sqm` : ''}
             </p>
           </div>
           <StatusBadge status={caseItem.status} />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-          <InfoItem label="قیمت درخواستی" value={formatPrice(caseItem.askingPrice)} />
-          <InfoItem label="درآمد خریدار" value={formatPrice(caseItem.buyerIncome)} />
-          <InfoItem label="خریدار" value={caseItem.buyer.fullName} />
-          <InfoItem label="فروشنده" value={caseItem.seller?.fullName || '—'} />
+          <InfoItem label={t('price')} value={formatMoney(caseItem.askingPrice, locale)} />
+          <InfoItem label={t('income')} value={formatMoney(caseItem.buyerIncome, locale)} />
+          <InfoItem label={t('buyer')} value={caseItem.buyer.fullName} />
+          <InfoItem label={t('seller')} value={caseItem.seller?.fullName || '—'} />
         </div>
 
         {caseItem.buyerNotes && (
@@ -134,12 +137,12 @@ export function CaseDetailView({
       {caseItem.bankCreditCheck && caseItem.bankCreditCheck.result !== 'PENDING' && (
         <div className="glass p-6">
           <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="text-gold">🏦</span> نتیجه اعتبارسنجی بانک
+            <span className="text-gold">🏦</span> {t('bankResult')}
           </h3>
           <div className="grid grid-cols-3 gap-4">
-            <InfoItem label="نتیجه" value={caseItem.bankCreditCheck.result === 'APPROVED' ? 'تأیید' : caseItem.bankCreditCheck.result === 'REJECTED' ? 'رد' : 'مشروط'} />
-            <InfoItem label="سقف وام" value={formatPrice(caseItem.bankCreditCheck.maxLoanAmount)} />
-            <InfoItem label="نرخ سود" value={caseItem.bankCreditCheck.interestRate ? `${caseItem.bankCreditCheck.interestRate}٪` : '—'} />
+            <InfoItem label={t('result')} value={caseItem.bankCreditCheck.result === 'APPROVED' ? t('approved') : caseItem.bankCreditCheck.result === 'REJECTED' ? t('rejected') : t('conditional')} />
+            <InfoItem label={t('maxLoan')} value={formatMoney(caseItem.bankCreditCheck.maxLoanAmount, locale)} />
+            <InfoItem label={t('interestRate')} value={caseItem.bankCreditCheck.interestRate ? `${caseItem.bankCreditCheck.interestRate}%` : '—'} />
           </div>
         </div>
       )}
@@ -147,11 +150,11 @@ export function CaseDetailView({
       {caseItem.appraisalRequest?.appraisedValue && (
         <div className="glass p-6">
           <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <span className="text-purple-400">📋</span> گزارش ارزیابی
+            <span className="text-purple-400">📋</span> {t('valuationReport')}
           </h3>
           <div className="grid grid-cols-2 gap-4">
-            <InfoItem label="ارزش ارزیابی‌شده" value={formatPrice(caseItem.appraisalRequest.appraisedValue)} />
-            <InfoItem label="ارزیاب" value={caseItem.appraisalRequest.appraiser?.fullName || '—'} />
+            <InfoItem label={t('appraisedValue')} value={formatMoney(caseItem.appraisalRequest.appraisedValue, locale)} />
+            <InfoItem label={t('appraiser')} value={caseItem.appraisalRequest.appraiser?.fullName || '—'} />
           </div>
           {caseItem.appraisalRequest.reportNotes && (
             <p className="text-sm text-slate-400 mt-3 bg-white/[0.03] p-3 rounded-xl">{caseItem.appraisalRequest.reportNotes}</p>
@@ -160,14 +163,14 @@ export function CaseDetailView({
       )}
 
       {/* Action panels based on status and role */}
-      <ActionPanel title="عملیات">
+      <ActionPanel title={t('actions')}>
         {caseItem.status === 'DRAFT' && (role === 'BUYER' || role === 'ADMIN') && (
           <button
             className="btn-primary"
             disabled={!!loading}
             onClick={() => act('submit', () => import('@/lib/api').then(({ api }) => api.submitCase(caseItem.id, token)))}
           >
-            {loading === 'submit' ? '...' : 'ارسال درخواست'}
+            {loading === 'submit' ? '...' : t('submitRequest')}
           </button>
         )}
 
@@ -178,14 +181,14 @@ export function CaseDetailView({
               disabled={!!loading}
               onClick={() => act('bank', () => import('@/lib/api').then(({ api }) => api.sendToBank(caseItem.id, token)))}
             >
-              {loading === 'bank' ? '...' : 'ارجاع به بانک'}
+              {loading === 'bank' ? '...' : t('sendToBank')}
             </button>
             {!caseItem.seller && sellers.length > 0 && (
               <div className="flex gap-2 items-end">
                 <div className="flex-1">
-                  <label className="label">اتصال فروشنده</label>
+                  <label className="label">{t('assignSeller')}</label>
                   <select className="input" value={selectedSeller} onChange={(e) => setSelectedSeller(e.target.value)}>
-                    <option value="">انتخاب فروشنده</option>
+                    <option value="">{t('selectSeller')}</option>
                     {sellers.map((s) => (
                       <option key={s.id} value={s.id}>{s.fullName}</option>
                     ))}
@@ -196,7 +199,7 @@ export function CaseDetailView({
                   disabled={!selectedSeller || !!loading}
                   onClick={() => act('seller', () => import('@/lib/api').then(({ api }) => api.assignSeller(caseItem.id, selectedSeller, token)))}
                 >
-                  اتصال
+                  {t('assignSeller')}
                 </button>
               </div>
             )}
@@ -206,12 +209,12 @@ export function CaseDetailView({
         {caseItem.status === 'BANK_REVIEW' && (role === 'BANK_OPS' || role === 'ADMIN') && (
           <div className="space-y-3">
             <select className="input max-w-xs" value={bankResult} onChange={(e) => setBankResult(e.target.value)}>
-              <option value="APPROVED">تأیید</option>
-              <option value="CONDITIONAL">تأیید مشروط</option>
-              <option value="REJECTED">رد</option>
+              <option value="APPROVED">{t('approve')}</option>
+              <option value="CONDITIONAL">{t('conditionalApprove')}</option>
+              <option value="REJECTED">{t('reject')}</option>
             </select>
             {bankResult === 'REJECTED' && (
-              <input className="input max-w-md" placeholder="دلیل رد" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
+              <input className="input max-w-md" placeholder={t('rejectionReason')} value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} />
             )}
             <button
               className="btn-primary"
@@ -225,7 +228,7 @@ export function CaseDetailView({
                 ),
               )}
             >
-              {loading === 'review' ? '...' : 'ثبت نتیجه اعتبارسنجی'}
+              {loading === 'review' ? '...' : t('submitBankResult')}
             </button>
           </div>
         )}
@@ -236,7 +239,7 @@ export function CaseDetailView({
             disabled={!!loading}
             onClick={() => act('appraisal', () => import('@/lib/api').then(({ api }) => api.requestAppraisal(caseItem.id, token)))}
           >
-            {loading === 'appraisal' ? '...' : 'درخواست ارزیابی ملک'}
+            {loading === 'appraisal' ? '...' : t('requestValuation')}
           </button>
         )}
 
@@ -246,19 +249,19 @@ export function CaseDetailView({
             disabled={!!loading}
             onClick={() => act('accept', () => import('@/lib/api').then(({ api }) => api.acceptAppraisal(caseItem.id, token)))}
           >
-            {loading === 'accept' ? '...' : 'پذیرش و شروع ارزیابی'}
+            {loading === 'accept' ? '...' : t('acceptValuation')}
           </button>
         )}
 
         {caseItem.status === 'APPRAISAL_IN_PROGRESS' && (role === 'APPRAISER' || role === 'ADMIN') && (
           <div className="space-y-3 max-w-md">
             <div>
-              <label className="label">ارزش ملک (ریال)</label>
+              <label className="label">{t('valueOman')}</label>
               <input className="input" type="number" value={appraisalValue} onChange={(e) => setAppraisalValue(e.target.value)} placeholder="8000000000" />
             </div>
             <div>
-              <label className="label">یادداشت گزارش</label>
-              <textarea className="input" rows={3} value={appraisalNotes} onChange={(e) => setAppraisalNotes(e.target.value)} placeholder="گزارش رسمی ارزیابی..." />
+              <label className="label">{t('reportNotes')}</label>
+              <textarea className="input" rows={3} value={appraisalNotes} onChange={(e) => setAppraisalNotes(e.target.value)} placeholder={t('reportNotes')} />
             </div>
             <button
               className="btn-success"
@@ -272,7 +275,7 @@ export function CaseDetailView({
                 ),
               )}
             >
-              {loading === 'submitAppraisal' ? '...' : 'ثبت گزارش ارزیابی'}
+              {loading === 'submitAppraisal' ? '...' : t('submitValuation')}
             </button>
           </div>
         )}
@@ -283,7 +286,7 @@ export function CaseDetailView({
             disabled={!!loading}
             onClick={() => act('deal', () => import('@/lib/api').then(({ api }) => api.completeDeal(caseItem.id, token)))}
           >
-            {loading === 'deal' ? '...' : 'تکمیل معامله'}
+            {loading === 'deal' ? '...' : t('completeDeal')}
           </button>
         )}
 
@@ -292,18 +295,18 @@ export function CaseDetailView({
             className="btn-danger mr-2"
             disabled={!!loading}
             onClick={() => {
-              if (confirm('آیا از لغو پرونده مطمئن هستید؟')) {
+              if (confirm(t('confirmCancel'))) {
                 act('cancel', () => import('@/lib/api').then(({ api }) => api.cancelCase(caseItem.id, token)));
               }
             }}
           >
-            لغو پرونده
+            {t('cancelCase')}
           </button>
         )}
       </ActionPanel>
 
       <div className="glass p-6">
-        <h3 className="font-semibold text-white mb-5">تاریخچه پرونده</h3>
+        <h3 className="font-semibold text-white mb-5">{t('timeline')}</h3>
         <CaseTimeline events={caseItem.events} />
       </div>
     </div>
@@ -333,6 +336,7 @@ function ActionPanel({ title, children }: { title: string; children: React.React
 }
 
 export function WorkflowSteps({ currentStatus }: { currentStatus: string }) {
+  const { t, locale } = useLocale();
   const steps = [
     'SUBMITTED',
     'BANK_REVIEW',
@@ -348,7 +352,7 @@ export function WorkflowSteps({ currentStatus }: { currentStatus: string }) {
 
   return (
     <div className="glass p-6 mb-6">
-      <h3 className="font-semibold text-white mb-6">مراحل فرآیند</h3>
+      <h3 className="font-semibold text-white mb-6">{t('workflow')}</h3>
       <div className="relative">
         <div className="absolute top-5 right-0 left-0 h-0.5 bg-white/5 hidden md:block" />
         <div className="grid grid-cols-2 md:grid-cols-7 gap-3">
@@ -368,7 +372,7 @@ export function WorkflowSteps({ currentStatus }: { currentStatus: string }) {
                 <p className={`text-[10px] md:text-xs mt-2 leading-tight font-medium ${
                   active ? 'text-gold-light' : done ? 'text-accent-light' : 'text-slate-500'
                 }`}>
-                  {STATUS_LABELS[step as keyof typeof STATUS_LABELS]}
+                  {locale === 'ar' ? STATUS_LABELS_AR[step as keyof typeof STATUS_LABELS_AR] : STATUS_LABELS[step as keyof typeof STATUS_LABELS]}
                 </p>
               </div>
             );

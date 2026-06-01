@@ -8,8 +8,10 @@ import { CaseCard } from '@/components/case-components';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
 import { Case } from '@/lib/types';
+import { useLocale } from '@/lib/i18n';
 
 export default function BankDashboard() {
+  const { t } = useLocale();
   const { token } = useAuth();
   const [pending, setPending] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
@@ -22,10 +24,10 @@ export default function BankDashboard() {
   return (
     <RequireAuth roles={['BANK_OPS', 'ADMIN']}>
       <DashboardLayout>
-        <PageHeader title="بررسی اعتباری" subtitle="پرونده‌های در انتظار بررسی بانک" />
+        <PageHeader title={t('creditReview')} subtitle={t('creditReviewSubtitle')} />
 
         {loading ? <LoadingSpinner /> : pending.length === 0 ? (
-          <EmptyState title="پرونده‌ای در انتظار بررسی نیست" />
+          <EmptyState title={t('noBankCases')} />
         ) : (
           <div className="space-y-3">
             {pending.map((c) => (

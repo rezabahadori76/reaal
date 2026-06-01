@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { useAuth, getDashboardRoute } from '@/lib/auth-context';
-import { ROLE_LABELS, UserRole } from '@/lib/types';
+import { ROLE_LABELS, ROLE_LABELS_AR, UserRole } from '@/lib/types';
+import { LanguageSwitcher, useLocale } from '@/lib/i18n';
 import { Logo, LoadingSpinner } from './ui';
 
 const NAV_ICONS: Record<string, React.ReactNode> = {
@@ -50,20 +51,20 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-const NAV_ITEMS: Record<UserRole, { href: string; label: string }[]> = {
+const navItems = (t: (key: string) => string): Record<UserRole, { href: string; label: string }[]> => ({
   ADMIN: [
-    { href: '/admin', label: 'داشبورد' },
-    { href: '/admin/cases', label: 'پرونده‌ها' },
-    { href: '/admin/users', label: 'کاربران' },
+    { href: '/admin', label: t('adminDashboard') },
+    { href: '/admin/cases', label: t('casesManagement') },
+    { href: '/admin/users', label: t('users') },
   ],
   BUYER: [
-    { href: '/buyer', label: 'داشبورد' },
-    { href: '/buyer/new-case', label: 'درخواست جدید' },
+    { href: '/buyer', label: t('buyerDashboard') },
+    { href: '/buyer/new-case', label: t('newRequest') },
   ],
-  SELLER: [{ href: '/seller', label: 'پرونده‌های من' }],
-  BANK_OPS: [{ href: '/bank', label: 'بررسی اعتباری' }],
-  APPRAISER: [{ href: '/appraiser', label: 'درخواست‌های ارزیابی' }],
-};
+  SELLER: [{ href: '/seller', label: t('sellerCases') }],
+  BANK_OPS: [{ href: '/bank', label: t('creditReview') }],
+  APPRAISER: [{ href: '/appraiser', label: t('appraisalRequests') }],
+});
 
 const ROLE_COLORS: Record<UserRole, string> = {
   ADMIN: 'from-purple-500 to-pink-500',
@@ -75,6 +76,7 @@ const ROLE_COLORS: Record<UserRole, string> = {
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, logout, loading } = useAuth();
+  const { t, locale, isRtl } = useLocale();
   const pathname = usePathname();
   const router = useRouter();
 
@@ -91,17 +93,21 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     return null;
   }
 
-  const navItems = NAV_ITEMS[user.role] || [];
+  const items = navItems(t)[user.role] || [];
+  const roleLabel = locale === 'ar' ? ROLE_LABELS_AR[user.role] : ROLE_LABELS[user.role];
 
   return (
     <div className="min-h-screen flex bg-surface">
-      <aside className="w-72 glass-strong m-4 mr-0 rounded-r-none flex flex-col shrink-0">
+      <aside className={`w-72 glass-strong m-4 flex flex-col shrink-0 ${isRtl ? 'ml-0 rounded-l-none' : 'mr-0 rounded-r-none'}`}>
         <div className="p-6 border-b border-white/5">
-          <Link href="/"><Logo size="md" /></Link>
+          <div className="flex items-center justify-between gap-3">
+            <Link href="/"><Logo size="md" /></Link>
+            <LanguageSwitcher />
+          </div>
         </div>
 
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map((item) => (
+          {items.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -122,7 +128,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm text-white truncate">{user.fullName}</p>
-              <p className="text-xs text-slate-500">{ROLE_LABELS[user.role]}</p>
+              <p className="text-xs text-slate-500">{roleLabel}</p>
             </div>
           </div>
           <button
@@ -132,7 +138,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
             </svg>
-            خروج از حساب
+            {t('logout')}
           </button>
         </div>
       </aside>

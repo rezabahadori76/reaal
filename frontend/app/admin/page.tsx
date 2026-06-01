@@ -8,8 +8,10 @@ import { CaseCard } from '@/components/case-components';
 import { useAuth } from '@/lib/auth-context';
 import { api } from '@/lib/api';
 import { DashboardStats, Case } from '@/lib/types';
+import { useLocale } from '@/lib/i18n';
 
 export default function AdminDashboard() {
+  const { t, isRtl } = useLocale();
   const { token } = useAuth();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [cases, setCases] = useState<Case[]>([]);
@@ -28,23 +30,23 @@ export default function AdminDashboard() {
     <RequireAuth roles={['ADMIN']}>
       <DashboardLayout>
         <PageHeader
-          title="داشبورد مدیریت"
-          subtitle="نمای کلی عملیات پلتفرم"
-          badge="پنل مدیر"
+          title={t('adminDashboard')}
+          subtitle={t('adminSubtitle')}
+          badge={t('adminBadge')}
         />
 
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-            <StatCard label="کل پرونده‌ها" value={stats.totalCases} accent="blue" icon="📁" />
-            <StatCard label="پرونده‌های فعال" value={stats.activeCases} accent="gold" trend="در جریان" icon="⚡" />
-            <StatCard label="تکمیل شده" value={stats.completedCases} accent="emerald" icon="✅" />
-            <StatCard label="کاربران" value={stats.totalUsers} accent="purple" icon="👥" />
+            <StatCard label={t('totalCases')} value={stats.totalCases} accent="blue" icon="📁" />
+            <StatCard label={t('activeCases')} value={stats.activeCases} accent="gold" trend={t('inProgress')} icon="⚡" />
+            <StatCard label={t('completedCases')} value={stats.completedCases} accent="emerald" icon="✅" />
+            <StatCard label={t('users')} value={stats.totalUsers} accent="purple" icon="👥" />
           </div>
         )}
 
         {stats && stats.casesByStatus.length > 0 && (
           <div className="glass p-6 mb-8">
-            <h3 className="font-semibold text-white mb-5">توزیع وضعیت پرونده‌ها</h3>
+            <h3 className="font-semibold text-white mb-5">{t('casesByStatus')}</h3>
             <div className="flex flex-wrap gap-3">
               {stats.casesByStatus.map((item) => (
                 <div key={item.status} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-white/5">
@@ -57,10 +59,10 @@ export default function AdminDashboard() {
         )}
 
         <div className="flex items-center justify-between mb-5">
-          <h3 className="font-semibold text-white">آخرین پرونده‌ها</h3>
+          <h3 className="font-semibold text-white">{t('latestCases')}</h3>
           <Link href="/admin/cases" className="text-sm text-accent-light hover:underline flex items-center gap-1">
-            مشاهده همه
-            <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            {t('viewAll')}
+            <svg className={`w-4 h-4 ${isRtl ? '' : 'rotate-180'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
           </Link>
         </div>
         <div className="space-y-4">
